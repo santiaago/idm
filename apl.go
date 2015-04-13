@@ -21,6 +21,17 @@ const (
 	// Identifier represent an identifier such as a var name
 )
 
+// eof rune to treat EOF like any other character
+var eof = rune(0)
+
+func isWhitespace(r rune) bool {
+	return r == ' ' || r == '\t' || r == 'n'
+}
+
+func isLetter(r rune) bool {
+	return (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z')
+}
+
 func main() {
 	fmt.Println("hello, world")
 }
