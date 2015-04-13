@@ -194,7 +194,7 @@ func (p *Parser) Parse() (*Statement, error) {
 
 	// Next we should see the "=" keyword.
 	if tok, lit := p.scanIgnoreWhitespace(); tok != Assign {
-		return nil, fmt.Errorf("found %q, expected FROM", lit)
+		return nil, fmt.Errorf("found %q, expected '=' with tok: %v, expected %v", lit, tok, Assign)
 	}
 
 	// Finally we should read the left var/number name.
@@ -210,4 +210,10 @@ func (p *Parser) Parse() (*Statement, error) {
 
 func main() {
 	fmt.Println("hello, world")
+	s := "a = b"
+	stmt, err := NewParser(strings.NewReader(s)).Parse()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Printf("%+v", stmt)
 }
