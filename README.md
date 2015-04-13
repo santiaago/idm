@@ -1,6 +1,6 @@
 # idm
 
-idm (stands for it doesn't matter) is a toy implementation of an APL interpreter.
+idm (it doesn't matter) is a toy implementation of an APL interpreter.
 
 I want to build a toy implementation on an APL-like interpreter. I got this idea after watching [this](https://www.youtube.com/watch?v=PXoG0WX0r_E) video from Rob Pike.
 
