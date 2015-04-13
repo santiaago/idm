@@ -5,6 +5,34 @@ import (
 	"testing"
 )
 
+func TestScan(t *testing.T) {
+	var tests = []struct {
+		s   string
+		tok Token
+		lit string
+	}{
+		{s: ``, tok: EOF},
+		{s: `#`, tok: Error, lit: `#`},
+		{s: ` `, tok: Space, lit: ` `},
+		{s: "\t", tok: Space, lit: "\t"},
+		{s: "\n", tok: Space, lit: "\n"},
+		{s: `*`, tok: Asterix, lit: `*`},
+		{s: `=`, tok: Assign, lit: `=`},
+		{s: `a`, tok: Identifier, lit: `a`},
+		{s: `a42`, tok: Identifier, lit: `a42`},
+		{s: `a_42`, tok: Identifier, lit: `a_42`},
+	}
+	for i, tt := range tests {
+		s := NewScanner(strings.NewReader(tt.s))
+		tok, lit := s.Scan()
+		if tt.tok != tok {
+			t.Errorf("%d. %q token mismatch: exp=%q got=%q <%q>", i, tt.s, tt.tok, tok, lit)
+		} else if tt.lit != lit {
+			t.Errorf("%d. %q literal mismatch: exp=%q got=%q", i, tt.s, tt.lit, lit)
+		}
+	}
+}
+
 func TestScanWhitespace(t *testing.T) {
 	var tests = []struct {
 		s   string
