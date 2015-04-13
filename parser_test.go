@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestParserScan(t *testing.T) {
+func TestParser_Scan(t *testing.T) {
 	var tests = []struct {
 		s    string
 		stmt *Statement

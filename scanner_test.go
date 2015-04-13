@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestScan(t *testing.T) {
+func TestScanner_Scan(t *testing.T) {
 	var tests = []struct {
 		s   string
 		tok Token
@@ -33,7 +33,7 @@ func TestScan(t *testing.T) {
 	}
 }
 
-func TestScanWhitespace(t *testing.T) {
+func TestScanner_scanwhitespace(t *testing.T) {
 	var tests = []struct {
 		s   string
 		tok Token
@@ -66,7 +66,7 @@ func TestScanWhitespace(t *testing.T) {
 
 }
 
-func TestScanIdentifier(t *testing.T) {
+func TestScanner_scanIdentifier(t *testing.T) {
 	var tests = []struct {
 		s   string
 		tok Token
@@ -102,7 +102,7 @@ func TestScanIdentifier(t *testing.T) {
 	}
 }
 
-func TestIsWhitespace(t *testing.T) {
+func TestScanner_isWhitespace(t *testing.T) {
 	var tests = []struct {
 		r        rune
 		expected bool
@@ -120,7 +120,7 @@ func TestIsWhitespace(t *testing.T) {
 	}
 }
 
-func TestIsLetter(t *testing.T) {
+func TestScanner_isLetter(t *testing.T) {
 	var tests = []struct {
 		r        rune
 		expected bool
@@ -139,7 +139,7 @@ func TestIsLetter(t *testing.T) {
 	}
 }
 
-func TestIsDigit(t *testing.T) {
+func TestScanner_isDigit(t *testing.T) {
 	var tests = []struct {
 		r        rune
 		expected bool
