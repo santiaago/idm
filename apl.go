@@ -171,6 +171,40 @@ func (p *Parser) scanIgnoreWhitespace() (t Token, lit string) {
 	return
 }
 
+// Statement represents a code statement a = 2.
+type Statement struct {
+	Left  string
+	Rigth string
+}
+
+// Parser parse a assign statement a = b
+func (p *Parser) Parser() (*Statement, error) {
+	stmt := &Statement{}
+
+	// Next we should loop over all our comma-delimited fields.
+	// Read a field.
+	tok, lit := p.scanIgnoreWhitespace()
+	if tok != Identifier && tok != Asterix {
+		return nil, fmt.Errorf("found %q, expected left", lit)
+	}
+	stmt.Left = lit
+
+	// Next we should see the "=" keyword.
+	if tok, lit := p.scanIgnoreWhitespace(); tok != Assign {
+		return nil, fmt.Errorf("found %q, expected FROM", lit)
+	}
+
+	// Finally we should read the left var/number name.
+	tok, lit = p.scanIgnoreWhitespace()
+	if tok != Identifier {
+		return nil, fmt.Errorf("found %q, expected identifier name", lit)
+	}
+	stmt.Rigth = lit
+
+	// Return the successfully parsed statement.
+	return stmt, nil
+}
+
 func main() {
 	fmt.Println("hello, world")
 }
