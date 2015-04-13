@@ -16,9 +16,12 @@ const (
 	Number
 	// Operator an operator such as '+' '-' '*'
 	Operator
+	// Asterix the multiplication operator
+	Asterix
 	// Space represents space separation between tokens
 	Space
 	// Identifier represent an identifier such as a var name
+	Identifier
 )
 
 // eof rune to treat EOF like any other character
@@ -32,6 +35,9 @@ func isLetter(r rune) bool {
 	return (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z')
 }
 
+func isDigit(r rune) bool {
+	return (r >= '0' && r <= '9')
+}
 func main() {
 	fmt.Println("hello, world")
 }
