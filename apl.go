@@ -2,7 +2,10 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
+	"io"
+)
 
 // Token identifies the type of lex items.
 type Token int
