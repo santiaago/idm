@@ -58,6 +58,8 @@ func TestScanIdentifier(t *testing.T) {
 		{s: "  a  ", tok: Identifier, lit: " "},
 		{s: "aaa  ", tok: Identifier, lit: "aaa"},
 		{s: " aaa", tok: Identifier, lit: " aaa"},
+		{s: "ab123", tok: Identifier, lit: "ab123"},
+		{s: "ab_123", tok: Identifier, lit: "ab_123"},
 	}
 
 	for i, tt := range tests {
@@ -70,5 +72,60 @@ func TestScanIdentifier(t *testing.T) {
 			t.Errorf("%d. %q literal mismatch: exp=%q got=%q", i, tt.s, tt.lit, lit)
 		}
 	}
+}
 
+func TestIsWhitespace(t *testing.T) {
+	var tests = []struct {
+		r        rune
+		expected bool
+	}{
+		{r: ' ', expected: true},
+		{r: '\t', expected: true},
+		{r: '\n', expected: true},
+		{r: 'a', expected: false},
+	}
+	for i, tt := range tests {
+		got := isWhitespace(tt.r)
+		if got != tt.expected {
+			t.Errorf("%d. %t expected, got %t", i, tt.expected, got)
+		}
+	}
+}
+
+func TestIsLetter(t *testing.T) {
+	var tests = []struct {
+		r        rune
+		expected bool
+	}{
+		{r: ' ', expected: false},
+		{r: '\t', expected: false},
+		{r: '0', expected: false},
+		{r: 'a', expected: true},
+		{r: 'A', expected: true},
+	}
+	for i, tt := range tests {
+		got := isLetter(tt.r)
+		if got != tt.expected {
+			t.Errorf("%d. %t expected, got %t", i, tt.expected, got)
+		}
+	}
+}
+
+func TestIsDigit(t *testing.T) {
+	var tests = []struct {
+		r        rune
+		expected bool
+	}{
+		{r: ' ', expected: false},
+		{r: '\t', expected: false},
+		{r: '0', expected: true},
+		{r: 'a', expected: false},
+		{r: 'A', expected: false},
+	}
+	for i, tt := range tests {
+		got := isDigit(tt.r)
+		if got != tt.expected {
+			t.Errorf("%d. %t expected, got %t", i, tt.expected, got)
+		}
+	}
 }

@@ -100,7 +100,7 @@ func (s *Scanner) scanIdentifier() (t Token, lit string) {
 var eof = rune(0)
 
 func isWhitespace(r rune) bool {
-	return r == ' ' || r == '\t' || r == 'n'
+	return r == ' ' || r == '\t' || r == '\n'
 }
 
 func isLetter(r rune) bool {
