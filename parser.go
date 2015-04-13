@@ -50,7 +50,7 @@ func (p *Parser) scanIgnoreWhitespace() (t Token, lit string) {
 // Statement represents a code statement a = 2.
 type Statement struct {
 	Left  string
-	Rigth string
+	Right string
 }
 
 // Parse parse a assign statement a = b
@@ -71,7 +71,7 @@ func (p *Parser) Parse() (*Statement, error) {
 	if tok != Identifier {
 		return nil, fmt.Errorf("found %q, expected identifier name", lit)
 	}
-	stmt.Rigth = lit
+	stmt.Right = lit
 
 	return stmt, nil
 }
