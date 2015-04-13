@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"strings"
 )
 
 // Token identifies the type of lex items.
@@ -86,6 +87,8 @@ func (s *Scanner) Scan() (t Token, lit string) {
 		return EOF, ""
 	case '*':
 		return Asterix, string(r)
+	case '=':
+		return Assign, string(r)
 	}
 	return Error, string(r)
 }
@@ -177,14 +180,14 @@ type Statement struct {
 	Rigth string
 }
 
-// Parser parse a assign statement a = b
-func (p *Parser) Parser() (*Statement, error) {
+// Parse parse a assign statement a = b
+func (p *Parser) Parse() (*Statement, error) {
 	stmt := &Statement{}
 
 	// Next we should loop over all our comma-delimited fields.
 	// Read a field.
 	tok, lit := p.scanIgnoreWhitespace()
-	if tok != Identifier && tok != Asterix {
+	if tok != Identifier {
 		return nil, fmt.Errorf("found %q, expected left", lit)
 	}
 	stmt.Left = lit
