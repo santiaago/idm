@@ -143,6 +143,34 @@ func NewParser(r io.Reader) *Parser {
 	return &Parser{s: NewScanner(r)}
 }
 
+// scan returns the next token from the underlying scanner.
+// if a token has been unscanned then read that instead.
+func (p *Parser) scan() (t Token, lit string) {
+	// if we have a token on the buffer, then return it
+	if p.buf.n != 0 {
+		p.buf.n = 0
+		return p.buf.t, p.buf.lit
+	}
+	// otherwise read the next token from the scanner
+	t, lit = p.s.Scan()
+
+	// save it to the buffer in case we unscan later.
+	p.buf.t, p.buf.lit = t, lit
+	return
+}
+
+// unscan pushes the previously read token back onto the buffer.
+func (p *Parser) unscan() { p.buf.n = 1 }
+
+// scanIgnoreWhitespace scans the next non-whitespace token.
+func (p *Parser) scanIgnoreWhitespace() (t Token, lit string) {
+	t, lit = p.scan()
+	if t == Space {
+		t, lit = p.scan()
+	}
+	return
+}
+
 func main() {
 	fmt.Println("hello, world")
 }
