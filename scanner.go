@@ -75,10 +75,14 @@ func (s *Scanner) scanWhitespace() (t Token, lit string) {
 	return Space, buf.String()
 }
 
+// scanIdentifier consumes the current rune and all contiguous identifier runes.
 func (s *Scanner) scanIdentifier() (t Token, lit string) {
+	// Create a buffer and read the current character into it.
 	var buf bytes.Buffer
 	buf.WriteRune(s.read())
 
+	// Read every subsequent identifier into the buffer.
+	// Non indentifier characters and EOF will cause the loop to exit.
 	for {
 		if r := s.read(); r == eof {
 			break
