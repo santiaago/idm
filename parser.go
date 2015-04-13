@@ -5,6 +5,7 @@ import (
 	"io"
 )
 
+// Parser represents a parser.
 type Parser struct {
 	s   *Scanner
 	buf struct {

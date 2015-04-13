@@ -1,5 +1,6 @@
 package idm
 
+// Token represents a lexical token
 type Token int
 
 const (
