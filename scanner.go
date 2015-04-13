@@ -99,14 +99,20 @@ func (s *Scanner) scanIdentifier() (t Token, lit string) {
 // eof rune to treat EOF like any other character
 var eof = rune(0)
 
+// isWhitespace determines if the rune passed as param corresponds to a whitespace.
+// whitespace are ' ', '\t' and '\n'
 func isWhitespace(r rune) bool {
 	return r == ' ' || r == '\t' || r == '\n'
 }
 
+// isLetter determines if the rune passed as param corresponds to a letter.
+// whitespace are a-zA-Z
 func isLetter(r rune) bool {
 	return (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z')
 }
 
+// isDigit determines if the rune passed as param corresponds to a digit.
+// whitespace are 0-9
 func isDigit(r rune) bool {
 	return (r >= '0' && r <= '9')
 }
