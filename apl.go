@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"bufio"
+	"fmt"
 
 // Token identifies the type of lex items.
 type Token int
@@ -38,6 +40,17 @@ func isLetter(r rune) bool {
 func isDigit(r rune) bool {
 	return (r >= '0' && r <= '9')
 }
+
+// Scanner represents a lexical scanner
+type Scanner struct {
+	r *bufio.Reader
+}
+
+// NewScanner returns a new instance of Scanner.
+func NewScanner(r io.Reader) *Scanner {
+	return &Scanner{r: bufio.NewReader(r)}
+}
+
 func main() {
 	fmt.Println("hello, world")
 }
