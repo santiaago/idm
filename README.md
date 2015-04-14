@@ -4,12 +4,35 @@ idm (it doesn't matter) is a toy implementation of an APL interpreter.
 
 I want to build a toy implementation on an APL-like interpreter. I got this idea after watching [this](https://www.youtube.com/watch?v=PXoG0WX0r_E) video from Rob Pike.
 
-todo:
+**can do:**
 
-    	number
-    number
+    ./idm
+        1
+    1
+        1 + 1
+    2
+        a = 2
+    2
+        a
+    2
+        a + 1
+    3
+        b = 1
+    1
+        a + b
+    3
 
-...
+**todo:**
+
+    ./idm
+        1 + 2 + 3
+    6
+        1 + 2 * 3
+    9
+        2 * 3 + 9
+    24
+    ...
+    ...
 
 Ressources
 =====

@@ -227,7 +227,6 @@ func (p *Parser) Parse() (*Expression, error) {
 		if !isAssign {
 			right = lit
 		} else {
-			// set variable value here.
 			stack[left] = ValueParse(lit)
 			expr := Expression(Variable{name: left})
 			return &expr, nil
@@ -239,6 +238,7 @@ func (p *Parser) Parse() (*Expression, error) {
 	} else {
 		return nil, fmt.Errorf("found %q, expected identifier name", lit)
 	}
+
 	var expr Expression
 	if isAssign {
 		l := ValueParse(left)
