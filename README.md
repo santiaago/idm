@@ -4,6 +4,13 @@ idm (it doesn't matter) is a toy implementation of an APL interpreter.
 
 I want to build a toy implementation on an APL-like interpreter. I got this idea after watching [this](https://www.youtube.com/watch?v=PXoG0WX0r_E) video from Rob Pike.
 
+todo:
+
+    	number
+    number
+
+...
+
 Ressources
 =====
 * [Implementing a bignum calculator](https://www.youtube.com/watch?v=PXoG0WX0r_E)
@@ -13,3 +20,6 @@ Ressources
 * [ivy](http://godoc.org/robpike.io/ivy)
 * [Handwritten Parsers & Lexers in Go](http://blog.gopheracademy.com/advent-2014/parsers-lexers/)
 * [sql-parser](https://github.com/benbjohnson/sql-parser)
+* [APL demonstration 1975](https://www.youtube.com/watch?v=_DTpQ4Kk2wA&list=WL&index=13)
+* [try apl](http://tryapl.org/)
+* [mastering dyalog APL](http://www.dyalog.com/uploads/documents/MasteringDyalogAPL.pdf)
