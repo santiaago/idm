@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"strconv"
 )
 
 // Parser represents a parser.
@@ -99,7 +100,21 @@ func (b Binary) String() string {
 
 // Evaluate returns the number value
 func (b Binary) Evaluate() string {
-	return b.String()
+	if b.Operator == "+" {
+		return add(b.Left, b.Right)
+	}
+	return ""
+}
+
+func add(a, b string) string {
+	var ia, ib int64
+	var err error
+	ia, err = strconv.ParseInt(a, 10, 64)
+	if err != nil {
+		fmt.Println(err)
+	}
+	ib, err = strconv.ParseInt(b, 10, 64)
+	return fmt.Sprintf("%d", ia+ib)
 }
 
 // Parse parse a assign statement a = b
