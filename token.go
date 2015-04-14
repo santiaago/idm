@@ -14,8 +14,6 @@ const (
 	Number
 	// Operator an operator such as '+' '-' '*'
 	Operator
-	// Asterix the multiplication operator
-	Asterix
 	// Space represents space separation between tokens
 	Space
 	// Identifier represent an identifier such as a var name

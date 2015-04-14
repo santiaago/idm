@@ -49,8 +49,14 @@ func (s *Scanner) Scan() (t Token, lit string) {
 	switch r {
 	case eof:
 		return EOF, ""
+	case '+':
+		return Operator, string(r)
+	case '-':
+		return Operator, string(r)
+	case '/':
+		return Operator, string(r)
 	case '*':
-		return Asterix, string(r)
+		return Operator, string(r)
 	case '=':
 		return Assign, string(r)
 	}
