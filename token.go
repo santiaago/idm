@@ -1,4 +1,4 @@
-package idm
+package main
 
 // Token represents a lexical token
 type Token int

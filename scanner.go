@@ -1,4 +1,4 @@
-package idm
+package main
 
 import (
 	"bufio"
