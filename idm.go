@@ -12,6 +12,7 @@ import (
 func init() {
 	log.SetFlags(log.Ltime | log.Ldate | log.Lshortfile)
 }
+
 func main() {
 
 	scanner := bufio.NewScanner(os.Stdin)

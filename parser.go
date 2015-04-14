@@ -6,7 +6,10 @@ import (
 	"strconv"
 )
 
-var stack map[string]Value
+var (
+	// stack is used to store variable names and values.
+	stack map[string]Value
+)
 
 func init() {
 	stack = make(map[string]Value)
@@ -173,6 +176,7 @@ func times(a, b Value) Value {
 }
 
 // ValueParse parse the string in the proper value
+// todo(santiaago): will have to try different types here...
 func ValueParse(s string) Value {
 	v, err := tryIntString(s)
 	if err != nil {
@@ -187,20 +191,26 @@ func (p *Parser) Parse() (*Expression, error) {
 
 	var left, right, operator string
 	tok, lit := p.scanIgnoreWhitespace()
-	var lastTok Token
+	var lastTok Token = tok
 	if tok == Identifier {
 		left = lit
 	} else if tok == Number {
 		left = lit
-		lastTok = Number
 	} else {
 		return nil, fmt.Errorf("found %q, expected left", lit)
 	}
 
 	tok, lit = p.scanIgnoreWhitespace()
-	if tok == EOF && lastTok == Number {
-		e := Expression(Num{left})
-		return &e, nil
+	if tok == EOF {
+		if lastTok == Number {
+			e := Expression(Num{left})
+			return &e, nil
+		} else if lastTok == Identifier {
+			expr := Expression(Variable{name: left})
+			return &expr, nil
+		} else {
+			fmt.Println("jump", lastTok)
+		}
 	}
 
 	isAssign := tok == Assign
@@ -213,9 +223,6 @@ func (p *Parser) Parse() (*Expression, error) {
 	}
 
 	tok, lit = p.scanIgnoreWhitespace()
-	// if tok == Identifier {
-	// 	right = lit
-	// } else
 	if tok == Number {
 		if !isAssign {
 			right = lit
@@ -224,6 +231,10 @@ func (p *Parser) Parse() (*Expression, error) {
 			stack[left] = ValueParse(lit)
 			expr := Expression(Variable{name: left})
 			return &expr, nil
+		}
+	} else if tok == Identifier {
+		if !isAssign {
+			right = lit
 		}
 	} else {
 		return nil, fmt.Errorf("found %q, expected identifier name", lit)
@@ -234,8 +245,17 @@ func (p *Parser) Parse() (*Expression, error) {
 		r := ValueParse(right)
 		expr = Expression(Statement{Left: l, Right: r})
 	} else {
-		l := ValueParse(left)
-		r := ValueParse(right)
+		var l, r Value
+		if val, ok := stack[left]; ok {
+			l = val
+		} else {
+			l = ValueParse(left)
+		}
+		if val, ok := stack[right]; ok {
+			r = val
+		} else {
+			r = ValueParse(right)
+		}
 		expr = Expression(Binary{Left: l, Right: r, Operator: operator})
 	}
 	return &expr, nil
