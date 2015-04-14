@@ -11,13 +11,15 @@ import (
 func main() {
 
 	scanner := bufio.NewScanner(os.Stdin)
-	fmt.Printf("\t")
+	fmt.Printf("\t") // human lines start at tab. machine lines are without tab
+
 	for scanner.Scan() {
 		s := scanner.Text()
 		stmt, err := NewParser(strings.NewReader(s)).Parse()
 		if err != nil {
 			fmt.Println(err)
 		}
-		fmt.Printf("%+v\n\t", stmt)
+		fmt.Printf("%+v\n", stmt)
+		fmt.Printf("\t")
 	}
 }

@@ -102,6 +102,40 @@ func TestScanner_scanIdentifier(t *testing.T) {
 	}
 }
 
+func TestScanner_scanDigit(t *testing.T) {
+	var tests = []struct {
+		s   string
+		tok Token
+		lit string
+	}{
+		{s: ``, tok: Number, lit: "\x00"}, // a byte with the value 0
+		{s: ` #`, tok: Number, lit: ` `},
+		{s: `  `, tok: Number, lit: " "},
+		{s: "\t", tok: Number, lit: "\t"},
+		{s: "\n", tok: Number, lit: "\n"},
+		{s: "a", tok: Number, lit: "a"},
+		{s: " a", tok: Number, lit: " "},
+		{s: "aa", tok: Number, lit: "a"},
+		{s: "1", tok: Number, lit: "1"},
+		{s: " 1", tok: Number, lit: " 1"},
+		{s: " 1 ", tok: Number, lit: " 1"},
+		{s: "111", tok: Number, lit: "111"},
+		{s: "123456789", tok: Number, lit: "123456789"},
+		{s: " 123456789", tok: Number, lit: " 123456789"},
+	}
+
+	for i, tt := range tests {
+		s := NewScanner(strings.NewReader(tt.s))
+
+		tok, lit := s.scanDigit()
+		if tt.tok != tok {
+			t.Errorf("%d. %q token mismatch: exp=%q got=%q <%q>", i, tt.s, tt.tok, tok, lit)
+		} else if tt.lit != lit {
+			t.Errorf("%d. %q literal mismatch: exp=%q got=%q", i, tt.s, tt.lit, lit)
+		}
+	}
+}
+
 func TestScanner_isWhitespace(t *testing.T) {
 	var tests = []struct {
 		r        rune

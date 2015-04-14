@@ -41,6 +41,9 @@ func (s *Scanner) Scan() (t Token, lit string) {
 	} else if isLetter(r) {
 		s.unread()
 		return s.scanIdentifier()
+	} else if isDigit(r) {
+		s.unread()
+		return s.scanDigit()
 	}
 
 	switch r {
@@ -94,6 +97,27 @@ func (s *Scanner) scanIdentifier() (t Token, lit string) {
 		}
 	}
 	return Identifier, buf.String()
+}
+
+// scanNumber consumes the current rune and all contiguous digit runes.
+func (s *Scanner) scanDigit() (tok Token, lit string) {
+	// Create a buffer and rtead the current character into it.
+	var buf bytes.Buffer
+	buf.WriteRune(s.read())
+
+	// Read every subsequent digit into the buffer.
+	// Non digit characters and EOF will cause the loop to exit.
+	for {
+		if r := s.read(); r == eof {
+			break
+		} else if !isDigit(r) {
+			s.unread()
+			break
+		} else {
+			_, _ = buf.WriteRune(r)
+		}
+	}
+	return Number, buf.String()
 }
 
 // eof rune to treat EOF like any other character
