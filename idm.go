@@ -4,10 +4,14 @@ package main // package github.com/santiaago/idm
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 )
 
+func init() {
+	log.SetFlags(log.Ltime | log.Ldate | log.Lshortfile)
+}
 func main() {
 
 	scanner := bufio.NewScanner(os.Stdin)

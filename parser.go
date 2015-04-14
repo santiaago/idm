@@ -6,6 +6,12 @@ import (
 	"strconv"
 )
 
+var stack map[string]Value
+
+func init() {
+	stack = make(map[string]Value)
+}
+
 // Parser represents a parser.
 type Parser struct {
 	s   *Scanner
@@ -51,13 +57,13 @@ func (p *Parser) scanIgnoreWhitespace() (t Token, lit string) {
 // Expression is the interface for an expression.
 type Expression interface {
 	String() string
-	Evaluate() string
+	Evaluate() Value
 }
 
 // Statement represents a code statement a = 2.
 type Statement struct {
-	Left  string
-	Right string
+	Left  Value
+	Right Value
 }
 
 // String retuns the statement as a string.
@@ -66,8 +72,9 @@ func (s Statement) String() string {
 }
 
 // Evaluate evaluates the given statement.
-func (s Statement) Evaluate() string {
-	return fmt.Sprintf("%v%v", s.Left, s.Right)
+func (s Statement) Evaluate() Value {
+	// todo(santiaago): need to think what this should really do..
+	return s.Left
 }
 
 // Num represents a number statement.
@@ -81,8 +88,8 @@ func (n Num) String() string {
 }
 
 // Evaluate returns the number value
-func (n Num) Evaluate() string {
-	return n.String()
+func (n Num) Evaluate() Value {
+	return n
 }
 
 // Value is an interface to handle different types.
@@ -109,6 +116,22 @@ func tryIntString(s string) (Value, error) {
 	return Int(i), err
 }
 
+// Variable represents a variable.
+type Variable struct {
+	name string
+}
+
+// String returns the string representation of a variable.
+func (v Variable) String() string {
+	return v.name
+}
+
+// Evaluate returns the value holded by the variable v
+func (v Variable) Evaluate() Value {
+	// todo(santiaago): need to get value of var here.
+	return stack[v.name]
+}
+
 // Binary represents a binary statement
 // example: 12 + 3
 type Binary struct {
@@ -123,27 +146,37 @@ func (b Binary) String() string {
 }
 
 // Evaluate returns the number value
-func (b Binary) Evaluate() string {
+func (b Binary) Evaluate() Value {
 	if b.Operator == "+" {
 		return add(b.Left, b.Right)
 	} else if b.Operator == "-" {
 		return minus(b.Left, b.Right)
+	} else if b.Operator == "*" {
+		return times(b.Left, b.Right)
 	}
-	return ""
+	return nil
 }
 
-func add(a, b Value) string {
-	return fmt.Sprintf("%d", a.(Int)+b.(Int))
+func add(a, b Value) Value {
+	// todo(santiaago): will have to check types at some point
+	return Int(a.(Int) + b.(Int))
 }
 
-func minus(a, b Value) string {
-	return fmt.Sprintf("%d", a.(Int)-b.(Int))
+func minus(a, b Value) Value {
+	// todo(santiaago): will have to check types at some point
+	return Int(a.(Int) - b.(Int))
+}
+
+func times(a, b Value) Value {
+	// todo(santiaago): will have to check types at some point
+	return Int(a.(Int) * b.(Int))
 }
 
 // ValueParse parse the string in the proper value
 func ValueParse(s string) Value {
 	v, err := tryIntString(s)
 	if err != nil {
+		fmt.Println(err)
 		return nil
 	}
 	return v
@@ -151,6 +184,7 @@ func ValueParse(s string) Value {
 
 // Parse parse a assign statement a = b
 func (p *Parser) Parse() (*Expression, error) {
+
 	var left, right, operator string
 	tok, lit := p.scanIgnoreWhitespace()
 	var lastTok Token
@@ -173,22 +207,32 @@ func (p *Parser) Parse() (*Expression, error) {
 	if tok != Assign && tok != Operator {
 		return nil, fmt.Errorf("found %q, expected '=' with tok: %v, expected %v", lit, tok, Assign)
 	}
-	// get token
+
 	if tok == Operator {
 		operator = lit
 	}
 
 	tok, lit = p.scanIgnoreWhitespace()
-	if tok == Identifier {
-		right = lit
-	} else if tok == Number && !isAssign {
-		right = lit
+	// if tok == Identifier {
+	// 	right = lit
+	// } else
+	if tok == Number {
+		if !isAssign {
+			right = lit
+		} else {
+			// set variable value here.
+			stack[left] = ValueParse(lit)
+			expr := Expression(Variable{name: left})
+			return &expr, nil
+		}
 	} else {
 		return nil, fmt.Errorf("found %q, expected identifier name", lit)
 	}
 	var expr Expression
 	if isAssign {
-		expr = Expression(Statement{Left: left, Right: right})
+		l := ValueParse(left)
+		r := ValueParse(right)
+		expr = Expression(Statement{Left: l, Right: r})
 	} else {
 		l := ValueParse(left)
 		r := ValueParse(right)
