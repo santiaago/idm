@@ -84,6 +84,24 @@ func (n Num) Evaluate() string {
 	return n.String()
 }
 
+// Binary represents a binary statement
+// example: 12 + 3
+type Binary struct {
+	Left     string
+	Right    string
+	Operator string
+}
+
+// String returns the string of the number
+func (b Binary) String() string {
+	return fmt.Sprintf("%v %v %v", b.Left, b.Operator, b.Right)
+}
+
+// Evaluate returns the number value
+func (b Binary) Evaluate() string {
+	return b.String()
+}
+
 // Parse parse a assign statement a = b
 func (p *Parser) Parse() (*Expression, error) {
 	stmt := Statement{}
