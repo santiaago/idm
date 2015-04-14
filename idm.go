@@ -1,5 +1,5 @@
 // package idm (it doesn't matter) is a toy implementation of an APL interpreter.
-package main
+package main // package github.com/santiaago/idm
 
 import (
 	"bufio"

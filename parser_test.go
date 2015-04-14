@@ -9,12 +9,12 @@ import (
 func TestParser_Scan(t *testing.T) {
 	var tests = []struct {
 		s    string
-		stmt *Statement
+		expr Expression
 		err  string
 	}{
 		{
 			s: `a = b`,
-			stmt: &Statement{
+			expr: Statement{
 				Left:  "a",
 				Right: "b",
 			},
@@ -26,11 +26,11 @@ func TestParser_Scan(t *testing.T) {
 	}
 
 	for i, tt := range tests {
-		stmt, err := NewParser(strings.NewReader(tt.s)).Parse()
+		expr, err := NewParser(strings.NewReader(tt.s)).Parse()
 		if !strings.Contains(errstring(err), tt.err) {
 			t.Errorf("%d. %q: error mismatch:\n  exp=%s\n  got=%s\n\n", i, tt.s, tt.err, err)
-		} else if tt.err == "" && !reflect.DeepEqual(tt.stmt, stmt) {
-			t.Errorf("%d. %q\n\nstmt mismatch:\n\nexp=%#v\n\ngot=%#v\n\n", i, tt.s, tt.stmt, stmt)
+		} else if tt.err == "" && !reflect.DeepEqual(tt.expr.Evaluate(), (*expr).Evaluate()) {
+			t.Errorf("%d. %q\n\nstmt mismatch:\n\nexp=%#v\n\ngot=%#v\n\n", i, tt.s, tt.expr.Evaluate(), (*expr).Evaluate())
 		}
 	}
 }

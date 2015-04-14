@@ -89,19 +89,23 @@ func (p *Parser) Parse() (*Expression, error) {
 	stmt := Statement{}
 
 	tok, lit := p.scanIgnoreWhitespace()
-
+	var lastTok Token
 	if tok == Identifier {
 		stmt.Left = lit
 	} else if tok == Number {
 		stmt.Left = lit
+		lastTok = Number
 	} else {
 		return nil, fmt.Errorf("found %q, expected left", lit)
 	}
 
-	if tok, lit := p.scanIgnoreWhitespace(); tok == EOF {
+	tok, lit = p.scanIgnoreWhitespace()
+	if tok == EOF && lastTok == Number {
 		e := Expression(Num{stmt.Left})
 		return &e, nil
-	} else if tok != Assign {
+	}
+
+	if tok != Assign {
 		return nil, fmt.Errorf("found %q, expected '=' with tok: %v, expected %v", lit, tok, Assign)
 	}
 
