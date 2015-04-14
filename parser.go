@@ -127,7 +127,7 @@ func (b Binary) Evaluate() string {
 	if b.Operator == "+" {
 		return add(b.Left, b.Right)
 	} else if b.Operator == "-" {
-		return add(b.Left, b.Right)
+		return minus(b.Left, b.Right)
 	}
 	return ""
 }
@@ -136,15 +136,8 @@ func add(a, b Value) string {
 	return fmt.Sprintf("%d", a.(Int)+b.(Int))
 }
 
-func minus(a, b string) string {
-	var ia, ib int64
-	var err error
-	ia, err = strconv.ParseInt(a, 10, 64)
-	if err != nil {
-		fmt.Println(err)
-	}
-	ib, err = strconv.ParseInt(b, 10, 64)
-	return fmt.Sprintf("%d", ia-ib)
+func minus(a, b Value) string {
+	return fmt.Sprintf("%d", a.(Int)-b.(Int))
 }
 
 // ValueParse parse the string in the proper value
