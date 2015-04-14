@@ -85,11 +85,35 @@ func (n Num) Evaluate() string {
 	return n.String()
 }
 
+// Value is an interface to handle different types.
+type Value interface {
+	String() string
+	Evaluate() Value
+}
+
+// Int is a type to handle integers
+type Int int64
+
+// String returns the string representation of an integer.
+func (i Int) String() string {
+	return fmt.Sprintf("%d", i)
+}
+
+// Evaluate returns the value of the given integer.
+func (i Int) Evaluate() Value {
+	return i
+}
+
+func tryIntString(s string) (Value, error) {
+	i, err := strconv.ParseInt(s, 10, 64)
+	return Int(i), err
+}
+
 // Binary represents a binary statement
 // example: 12 + 3
 type Binary struct {
-	Left     string
-	Right    string
+	Left     Value
+	Right    Value
 	Operator string
 }
 
@@ -108,15 +132,8 @@ func (b Binary) Evaluate() string {
 	return ""
 }
 
-func add(a, b string) string {
-	var ia, ib int64
-	var err error
-	ia, err = strconv.ParseInt(a, 10, 64)
-	if err != nil {
-		fmt.Println(err)
-	}
-	ib, err = strconv.ParseInt(b, 10, 64)
-	return fmt.Sprintf("%d", ia+ib)
+func add(a, b Value) string {
+	return fmt.Sprintf("%d", a.(Int)+b.(Int))
 }
 
 func minus(a, b string) string {
@@ -128,6 +145,15 @@ func minus(a, b string) string {
 	}
 	ib, err = strconv.ParseInt(b, 10, 64)
 	return fmt.Sprintf("%d", ia-ib)
+}
+
+// ValueParse parse the string in the proper value
+func ValueParse(s string) Value {
+	v, err := tryIntString(s)
+	if err != nil {
+		return nil
+	}
+	return v
 }
 
 // Parse parse a assign statement a = b
@@ -171,7 +197,9 @@ func (p *Parser) Parse() (*Expression, error) {
 	if isAssign {
 		expr = Expression(Statement{Left: left, Right: right})
 	} else {
-		expr = Expression(Binary{Left: left, Right: right, Operator: operator})
+		l := ValueParse(left)
+		r := ValueParse(right)
+		expr = Expression(Binary{Left: l, Right: r, Operator: operator})
 	}
 	return &expr, nil
 }
