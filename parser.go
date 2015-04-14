@@ -47,23 +47,61 @@ func (p *Parser) scanIgnoreWhitespace() (t Token, lit string) {
 	return
 }
 
+// Expression is the interface for an expression.
+type Expression interface {
+	String() string
+	Evaluate() string
+}
+
 // Statement represents a code statement a = 2.
 type Statement struct {
 	Left  string
 	Right string
 }
 
+// String retuns the statement as a string.
+func (s Statement) String() string {
+	return fmt.Sprintf("%v%v", s.Left, s.Right)
+}
+
+// Evaluate evaluates the given statement.
+func (s Statement) Evaluate() string {
+	return fmt.Sprintf("%v%v", s.Left, s.Right)
+}
+
+// Num represents a number statement.
+type Num struct {
+	n string
+}
+
+// String returns the string of the number
+func (n Num) String() string {
+	return fmt.Sprintf("%v", n.n)
+}
+
+// Evaluate returns the number value
+func (n Num) Evaluate() string {
+	return n.String()
+}
+
 // Parse parse a assign statement a = b
-func (p *Parser) Parse() (*Statement, error) {
-	stmt := &Statement{}
+func (p *Parser) Parse() (*Expression, error) {
+	stmt := Statement{}
 
 	tok, lit := p.scanIgnoreWhitespace()
-	if tok != Identifier {
+
+	if tok == Identifier {
+		stmt.Left = lit
+	} else if tok == Number {
+		stmt.Left = lit
+	} else {
 		return nil, fmt.Errorf("found %q, expected left", lit)
 	}
-	stmt.Left = lit
 
-	if tok, lit := p.scanIgnoreWhitespace(); tok != Assign {
+	if tok, lit := p.scanIgnoreWhitespace(); tok == EOF {
+		e := Expression(Num{stmt.Left})
+		return &e, nil
+	} else if tok != Assign {
 		return nil, fmt.Errorf("found %q, expected '=' with tok: %v, expected %v", lit, tok, Assign)
 	}
 
@@ -72,6 +110,6 @@ func (p *Parser) Parse() (*Statement, error) {
 		return nil, fmt.Errorf("found %q, expected identifier name", lit)
 	}
 	stmt.Right = lit
-
-	return stmt, nil
+	e := Expression(stmt)
+	return &e, nil
 }

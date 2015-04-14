@@ -15,11 +15,11 @@ func main() {
 
 	for scanner.Scan() {
 		s := scanner.Text()
-		stmt, err := NewParser(strings.NewReader(s)).Parse()
+		expr, err := NewParser(strings.NewReader(s)).Parse()
 		if err != nil {
 			fmt.Println(err)
 		}
-		fmt.Printf("%+v\n", stmt)
+		fmt.Printf("%+v\n", (*expr).Evaluate())
 		fmt.Printf("\t")
 	}
 }
