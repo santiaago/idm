@@ -104,13 +104,13 @@ func (b Binary) Evaluate() string {
 
 // Parse parse a assign statement a = b
 func (p *Parser) Parse() (*Expression, error) {
-	stmt := Statement{}
+	var left, right, operator string
 	tok, lit := p.scanIgnoreWhitespace()
 	var lastTok Token
 	if tok == Identifier {
-		stmt.Left = lit
+		left = lit
 	} else if tok == Number {
-		stmt.Left = lit
+		left = lit
 		lastTok = Number
 	} else {
 		return nil, fmt.Errorf("found %q, expected left", lit)
@@ -118,19 +118,32 @@ func (p *Parser) Parse() (*Expression, error) {
 
 	tok, lit = p.scanIgnoreWhitespace()
 	if tok == EOF && lastTok == Number {
-		e := Expression(Num{stmt.Left})
+		e := Expression(Num{left})
 		return &e, nil
 	}
 
-	if tok != Assign {
+	isAssign := tok == Assign
+	if tok != Assign && tok != Operator {
 		return nil, fmt.Errorf("found %q, expected '=' with tok: %v, expected %v", lit, tok, Assign)
+	}
+	// get token
+	if tok == Operator {
+		operator = lit
 	}
 
 	tok, lit = p.scanIgnoreWhitespace()
-	if tok != Identifier {
+	if tok == Identifier {
+		right = lit
+	} else if tok == Number && !isAssign {
+		right = lit
+	} else {
 		return nil, fmt.Errorf("found %q, expected identifier name", lit)
 	}
-	stmt.Right = lit
-	e := Expression(stmt)
-	return &e, nil
+	var expr Expression
+	if isAssign {
+		expr = Expression(Statement{Left: left, Right: right})
+	} else {
+		expr = Expression(Binary{Left: left, Right: right, Operator: operator})
+	}
+	return &expr, nil
 }
