@@ -2,25 +2,22 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"strings"
 )
 
 func main() {
-	// for {
-	// 	fmt.Printf("\t")
-	// 	var s string
-	// 	fmt.Scanf("%s", &s)
-	// 	stmt, err := NewParser(strings.NewReader(s)).Parse()
-	// 	if err != nil {
-	// 		fmt.Println(err)
-	// 	}
-	// 	fmt.Printf("%+v\n\t", stmt)
-	// }
-	s := "a = b"
-	stmt, err := NewParser(strings.NewReader(s)).Parse()
-	if err != nil {
-		fmt.Println(err)
+
+	scanner := bufio.NewScanner(os.Stdin)
+	fmt.Printf("\t")
+	for scanner.Scan() {
+		s := scanner.Text()
+		stmt, err := NewParser(strings.NewReader(s)).Parse()
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Printf("%+v\n\t", stmt)
 	}
-	fmt.Printf("%+v", stmt)
 }
