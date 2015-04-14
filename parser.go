@@ -87,7 +87,6 @@ func (n Num) Evaluate() string {
 // Parse parse a assign statement a = b
 func (p *Parser) Parse() (*Expression, error) {
 	stmt := Statement{}
-
 	tok, lit := p.scanIgnoreWhitespace()
 	var lastTok Token
 	if tok == Identifier {
