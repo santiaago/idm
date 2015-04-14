@@ -28,6 +28,22 @@ func TestParser_Scan(t *testing.T) {
 			},
 		},
 		{
+			s: `1 - 2`,
+			expr: Binary{
+				Left:     Int(1),
+				Right:    Int(2),
+				Operator: "-",
+			},
+		},
+		{
+			s: `1* 2`,
+			expr: Binary{
+				Left:     Int(1),
+				Right:    Int(2),
+				Operator: "*",
+			},
+		},
+		{
 			s:   `a`,
 			err: `found "", expected '='`,
 		},
