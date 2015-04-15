@@ -49,6 +49,22 @@ func TestParser_Scan(t *testing.T) {
 			},
 		},
 		{
+			s: `2 + a`,
+			expr: Binary{
+				Left:     Int(2),
+				Right:    Int(1),
+				Operator: "+",
+			},
+		},
+		{
+			s: `a + a`,
+			expr: Binary{
+				Left:     Int(1),
+				Right:    Int(1),
+				Operator: "+",
+			},
+		},
+		{
 			s:   `b`,
 			err: `ERROR`,
 		},
