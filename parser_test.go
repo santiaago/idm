@@ -12,78 +12,17 @@ func TestParser_Scan(t *testing.T) {
 		expr Expression
 		err  string
 	}{
-		{
-			s:    `a = 1`,
-			expr: Int(1),
-		},
-		{
-			s: `1 + 2`,
-			expr: Binary{
-				Left:     Int(1),
-				Right:    Int(2),
-				Operator: "+",
-			},
-		},
-		{
-			s: `1 - 2`,
-			expr: Binary{
-				Left:     Int(1),
-				Right:    Int(2),
-				Operator: "-",
-			},
-		},
-		{
-			s: `1* 2`,
-			expr: Binary{
-				Left:     Int(1),
-				Right:    Int(2),
-				Operator: "*",
-			},
-		},
-		{
-			s: `a + 2`,
-			expr: Binary{
-				Left:     Int(1),
-				Right:    Int(2),
-				Operator: "+",
-			},
-		},
-		{
-			s: `2 + a`,
-			expr: Binary{
-				Left:     Int(2),
-				Right:    Int(1),
-				Operator: "+",
-			},
-		},
-		{
-			s: `a + a`,
-			expr: Binary{
-				Left:     Int(1),
-				Right:    Int(1),
-				Operator: "+",
-			},
-		},
-		{
-			s:   `b`,
-			err: `ERROR`,
-		},
-		{
-			s:    `a + a + a + a`,
-			expr: Int(4),
-		},
-		{
-			s:    `a + a - a + a`,
-			expr: Int(2),
-		},
-		{
-			s:    `b = 42`,
-			expr: Int(42),
-		},
-		{
-			s:    `a = b`,
-			expr: Int(42),
-		},
+		{s: `a = 1`, expr: Int(1)},
+		{s: `1 + 2`, expr: Binary{Left: Int(1), Right: Int(2), Operator: "+"}},
+		{s: `1 - 2`, expr: Binary{Left: Int(1), Right: Int(2), Operator: "-"}},
+		{s: `1* 2`, expr: Binary{Left: Int(1), Right: Int(2), Operator: "*"}},
+		{s: `a + 2`, expr: Binary{Left: Int(1), Right: Int(2), Operator: "+"}},
+		{s: `2 + a`, expr: Binary{Left: Int(2), Right: Int(1), Operator: "+"}},
+		{s: `a + a`, expr: Binary{Left: Int(1), Right: Int(1), Operator: "+"}},
+		{s: `b`, err: `ERROR`}, {s: `a + a + a + a`, expr: Int(4)},
+		{s: `a + a - a + a`, expr: Int(2)},
+		{s: `b = 42`, expr: Int(42)},
+		{s: `a = b`, expr: Int(42)},
 	}
 
 	for i, tt := range tests {
