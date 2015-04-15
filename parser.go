@@ -59,9 +59,20 @@ func (p *Parser) scanIgnoreWhitespace() (t Token, lit string) {
 
 // numberOrVector returns a number or a vector.
 func (p *Parser) numberOrVector() Value {
-	_, lit := p.scanIgnoreWhitespace()
+	tok, lit := p.scanIgnoreWhitespace()
 	var vector Vector
-	vector = append(vector, ValueParse(lit))
+	if tok == Number {
+		vector = append(vector, ValueParse(lit))
+	} else if tok == Operator && lit == "-" {
+		tok, lit = p.scanIgnoreWhitespace()
+		if tok == Number {
+			vector = append(vector, ValueParse("-"+lit))
+		} else {
+			fmt.Println("ERROR function does not support token %v yet.", tok)
+		}
+	} else {
+		fmt.Println("ERROR function does not support token %v yet.", tok)
+	}
 
 	for {
 		// Read a field.
@@ -256,7 +267,7 @@ func times(a, b Value) Value {
 func ValueParse(s string) Value {
 	v, err := tryIntString(s)
 	if err != nil {
-		fmt.Printf("failed to parse %v got error: %v\n", s, err)
+		fmt.Printf("ERROR failed to parse %v got error: %v\n", s, err)
 		return nil
 	}
 	return v
@@ -265,7 +276,7 @@ func ValueParse(s string) Value {
 // Parse parse a assign statement a = b
 func (p *Parser) Parse() (*Expression, error) {
 
-	// First token can be an identifier or number (for now)
+	// First token can be an identifier or number(a number can start with a '-' sign)
 	var left Value
 	var right, operator string
 	tok, lit := p.scanIgnoreWhitespace()
@@ -275,8 +286,13 @@ func (p *Parser) Parse() (*Expression, error) {
 	} else if tok == Number {
 		p.unscan()
 		left = p.numberOrVector()
+	} else if tok == Operator {
+		p.unscan()
+		left = p.numberOrVector()
+		lastTok = Number
+		// todo(santiaago): need to handle negative identifiers and vectors.
 	} else {
-		return nil, fmt.Errorf("found %q, expected left", lit)
+		return nil, fmt.Errorf("ERROR found %q, expected left", lit)
 	}
 
 	// Next it could be EOF, an operator or an assignment (for now)
@@ -293,7 +309,7 @@ func (p *Parser) Parse() (*Expression, error) {
 			expr := Expression(left)
 			return &expr, nil
 		} else {
-			fmt.Println("ERROR Not a number or identifier ", lastTok)
+			fmt.Println("ERROR not a number or identifier ", lastTok)
 		}
 	}
 
