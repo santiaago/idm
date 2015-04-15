@@ -265,17 +265,16 @@ func ValueParse(s string) Value {
 // Parse parse a assign statement a = b
 func (p *Parser) Parse() (*Expression, error) {
 
-	var numberOfVector Value
-
 	// First token can be an identifier or number (for now)
-	var left, right, operator string
+	var left Value
+	var right, operator string
 	tok, lit := p.scanIgnoreWhitespace()
 	lastTok := tok
 	if tok == Identifier {
-		left = lit
+		left = Variable{name: lit}
 	} else if tok == Number {
 		p.unscan()
-		numberOfVector = p.numberOrVector()
+		left = p.numberOrVector()
 	} else {
 		return nil, fmt.Errorf("found %q, expected left", lit)
 	}
@@ -284,23 +283,24 @@ func (p *Parser) Parse() (*Expression, error) {
 	tok, lit = p.scanIgnoreWhitespace()
 	if tok == EOF {
 		if lastTok == Number {
-			e := Expression(numberOfVector)
-			return &e, nil
+			expr := Expression(left)
+			return &expr, nil
 		} else if lastTok == Identifier {
-			expr := Expression(Variable{name: left})
-			if expr.Evaluate() == nil {
+			// todo(santiaago): do we need this error check?
+			if left.Evaluate() == nil {
 				return nil, fmt.Errorf("ERROR")
 			}
+			expr := Expression(left)
 			return &expr, nil
 		} else {
-			fmt.Println("Not a number or identifier ", lastTok)
+			fmt.Println("ERROR Not a number or identifier ", lastTok)
 		}
 	}
 
 	isOperator := tok == Operator
 	isAssign := tok == Assign
 	if !isAssign && !isOperator {
-		return nil, fmt.Errorf("found %q, expected '=' with tok: %v, expected %v", lit, tok, Assign)
+		return nil, fmt.Errorf("ERROR found %q, expected '=' with tok: %v, expected %v", lit, tok, Assign)
 	}
 
 	if isOperator {
@@ -313,10 +313,17 @@ func (p *Parser) Parse() (*Expression, error) {
 		if tok == Number {
 			// todo(santiaago):
 			// we should print an error here if left is a number and not a variable
-			stack[left] = ValueParse(lit)
-			expr := Expression(Variable{name: left})
+			var expr Expression
+			if v, ok := left.(Variable); ok {
+				stack[v.name] = ValueParse(lit)
+				expr = Expression(v)
+			} else {
+				fmt.Println("ERROR left hand side should be a variable.")
+			}
 			return &expr, nil
 		}
+		// identifier case
+		// todo(santiaago): should add an token check here.
 		right = lit
 		var expr Expression
 		var r Value
@@ -325,8 +332,11 @@ func (p *Parser) Parse() (*Expression, error) {
 		} else {
 			r = ValueParse(right)
 		}
-		stack[left] = r
-		expr = Expression(Variable{name: left})
+
+		if v, ok := left.(Variable); ok {
+			stack[v.name] = r
+			expr = Expression(v)
+		}
 		return &expr, nil
 	}
 
@@ -336,7 +346,7 @@ func (p *Parser) Parse() (*Expression, error) {
 	var operators []string
 
 	// Initialize arrays with first term and first operator.
-	terms = append(terms, numberOfVector)
+	terms = append(terms, left)
 	operators = append(operators, operator)
 
 	for {
@@ -346,8 +356,17 @@ func (p *Parser) Parse() (*Expression, error) {
 			return nil, fmt.Errorf("found %q, expected number or identifier", lit)
 		}
 		p.unscan()
-		term := p.numberOrVector()
-		terms = append(terms, term)
+		// todo(santiaago): should check here cases (number, identifier)
+		if tok == Number {
+			term := p.numberOrVector()
+			terms = append(terms, term)
+		} else if tok == Identifier {
+			if v, ok := stack[lit]; ok {
+				terms = append(terms, v)
+			} else {
+				return nil, fmt.Errorf("ERROR variable %v not found", lit)
+			}
+		}
 		// Read operator
 		tok, lit = p.scanIgnoreWhitespace()
 		// If the next token is not an operator then break the loop
@@ -399,6 +418,9 @@ func buildOperatorExpression(terms []Value, operators []string) (*Expression, er
 		// } else {
 		r = right
 		//}
+		if cumulExpr == nil {
+			fmt.Println("ERROR nil expression.")
+		}
 		b := Binary{Left: cumulExpr.Evaluate(), Right: r, Operator: op}
 		cumulExpr = Expression(b)
 	}
