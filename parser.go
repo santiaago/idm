@@ -131,8 +131,10 @@ func (v Variable) String() string {
 
 // Evaluate returns the value holded by the variable v
 func (v Variable) Evaluate() Value {
-	// todo(santiaago): need to get value of var here.
-	return stack[v.name]
+	if val, ok := stack[v.name]; ok {
+		return val
+	}
+	return nil
 }
 
 // Binary represents a binary statement
@@ -191,7 +193,7 @@ func (p *Parser) Parse() (*Expression, error) {
 
 	var left, right, operator string
 	tok, lit := p.scanIgnoreWhitespace()
-	var lastTok Token = tok
+	lastTok := tok
 	if tok == Identifier {
 		left = lit
 	} else if tok == Number {
@@ -206,7 +208,11 @@ func (p *Parser) Parse() (*Expression, error) {
 			e := Expression(Num{left})
 			return &e, nil
 		} else if lastTok == Identifier {
+			// todo(santiaago): should check for variable existance?
 			expr := Expression(Variable{name: left})
+			if expr.Evaluate() == nil {
+				return nil, fmt.Errorf("ERROR")
+			}
 			return &expr, nil
 		} else {
 			fmt.Println("jump", lastTok)
