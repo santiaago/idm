@@ -14,7 +14,7 @@ func TestParser_Scan(t *testing.T) {
 	}{
 		{
 			s:    `a = 1`,
-			expr: Variable{name: "a"},
+			expr: Int(1),
 		},
 		{
 			s: `1 + 2`,
@@ -59,6 +59,14 @@ func TestParser_Scan(t *testing.T) {
 		{
 			s:    `a + a - a + a`,
 			expr: Int(2),
+		},
+		{
+			s:    `b = 42`,
+			expr: Int(42),
+		},
+		{
+			s:    `a = b`,
+			expr: Int(42),
 		},
 	}
 
