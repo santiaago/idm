@@ -191,6 +191,7 @@ func ValueParse(s string) Value {
 // Parse parse a assign statement a = b
 func (p *Parser) Parse() (*Expression, error) {
 
+	// First token can be an identifier or number (for now)
 	var left, right, operator string
 	tok, lit := p.scanIgnoreWhitespace()
 	lastTok := tok
@@ -202,13 +203,13 @@ func (p *Parser) Parse() (*Expression, error) {
 		return nil, fmt.Errorf("found %q, expected left", lit)
 	}
 
+	// Next it could be EOF, an operator or an assignment (for now)
 	tok, lit = p.scanIgnoreWhitespace()
 	if tok == EOF {
 		if lastTok == Number {
 			e := Expression(Num{left})
 			return &e, nil
 		} else if lastTok == Identifier {
-			// todo(santiaago): should check for variable existance?
 			expr := Expression(Variable{name: left})
 			if expr.Evaluate() == nil {
 				return nil, fmt.Errorf("ERROR")
@@ -219,32 +220,60 @@ func (p *Parser) Parse() (*Expression, error) {
 		}
 	}
 
+	isOperator := tok == Operator
 	isAssign := tok == Assign
-	if tok != Assign && tok != Operator {
+	if !isAssign && !isOperator {
 		return nil, fmt.Errorf("found %q, expected '=' with tok: %v, expected %v", lit, tok, Assign)
 	}
 
-	if tok == Operator {
+	if isOperator {
 		operator = lit
 	}
 
-	tok, lit = p.scanIgnoreWhitespace()
-	if tok == Number {
-		if !isAssign {
-			right = lit
-		} else {
+	// Next: Take care of assign case.
+	if isAssign {
+		tok, lit = p.scanIgnoreWhitespace()
+		if tok == Number {
 			stack[left] = ValueParse(lit)
 			expr := Expression(Variable{name: left})
 			return &expr, nil
 		}
-	} else if tok == Identifier {
-		if !isAssign {
-			right = lit
-		}
-	} else {
-		return nil, fmt.Errorf("found %q, expected identifier name", lit)
+		right = lit
+		return buildExpression(isAssign, left, right, operator)
 	}
 
+	// Next: Take care of operator case.
+	// We should loop over all our operators.
+	var terms []string
+	var operators []string
+
+	// Initialize arrays with the first term and operator seen.
+	terms = append(terms, left)
+	operators = append(operators, operator)
+
+	for {
+		// Read a field.
+		tok, lit = p.scanIgnoreWhitespace()
+		if tok != Identifier && tok != Number {
+			return nil, fmt.Errorf("found %q, expected number or identifier", lit)
+		}
+		terms = append(terms, lit)
+		// Read operator
+		tok, lit = p.scanIgnoreWhitespace()
+		// If the next token is not an operator then break the loop
+		if tok != Operator {
+			p.unscan()
+			break
+		}
+		operators = append(operators, lit)
+	}
+
+	// At this point we have terms and, operators.
+	// We need now to process all of this.
+	return buildOperatorExpression(terms, operators)
+}
+
+func buildExpression(isAssign bool, left, right, operator string) (*Expression, error) {
 	var expr Expression
 	if isAssign {
 		l := ValueParse(left)
@@ -265,4 +294,38 @@ func (p *Parser) Parse() (*Expression, error) {
 		expr = Expression(Binary{Left: l, Right: r, Operator: operator})
 	}
 	return &expr, nil
+}
+
+// At this point we have the following
+// left, operator, terms, operators
+// we need now to process all of this.
+func buildOperatorExpression(terms, operators []string) (*Expression, error) {
+
+	if len(terms)-1 != len(operators) {
+		return nil, fmt.Errorf("ERROR terms and operators size mismatch")
+	}
+
+	var cumulExpr Expression
+
+	first := terms[0]
+	if _, ok := stack[first]; ok {
+		cumulExpr = Expression(Variable{name: first})
+	} else {
+		cumulExpr = Expression(ValueParse(first))
+	}
+
+	for i := 0; i < len(operators); i++ {
+
+		right := terms[i+1]
+		op := operators[i]
+
+		var r Value
+		if val, ok := stack[right]; ok {
+			r = val
+		} else {
+			r = ValueParse(right)
+		}
+		cumulExpr = Expression(Binary{Left: cumulExpr.Evaluate(), Right: r, Operator: op})
+	}
+	return &cumulExpr, nil
 }
