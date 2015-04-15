@@ -355,22 +355,25 @@ func (p *Parser) Parse() (*Expression, error) {
 		if tok != Identifier && tok != Number {
 			return nil, fmt.Errorf("found %q, expected number or identifier", lit)
 		}
-		p.unscan()
 		// todo(santiaago): should check here cases (number, identifier)
 		if tok == Number {
+			p.unscan()
 			term := p.numberOrVector()
 			terms = append(terms, term)
 		} else if tok == Identifier {
-			if v, ok := stack[lit]; ok {
-				terms = append(terms, v)
+			if _, ok := stack[lit]; ok {
+				terms = append(terms, stack[lit])
 			} else {
 				return nil, fmt.Errorf("ERROR variable %v not found", lit)
 			}
+		} else {
+			return nil, fmt.Errorf("ERROR unexpected token %v", tok)
 		}
 		// Read operator
 		tok, lit = p.scanIgnoreWhitespace()
 		// If the next token is not an operator then break the loop
 		if tok != Operator {
+
 			p.unscan()
 			break
 		}
