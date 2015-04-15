@@ -21,16 +21,16 @@ I want to build a toy implementation on an APL-like interpreter. I got this idea
     1
         a + b
     3
+        a = b
+    1
+        1 + 2 + 3 - 10
+    -4
+        a + b + 10
+    12
 
 **todo:**
 
     ./idm
-        1 + 2 + 3
-    6
-        1 + 2 * 3
-    9
-        2 * 3 + 9
-    24
     ...
     ...
 
