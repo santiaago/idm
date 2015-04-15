@@ -52,6 +52,14 @@ func TestParser_Scan(t *testing.T) {
 			s:   `b`,
 			err: `ERROR`,
 		},
+		{
+			s:    `a + a + a + a`,
+			expr: Int(4),
+		},
+		{
+			s:    `a + a - a + a`,
+			expr: Int(2),
+		},
 	}
 
 	for i, tt := range tests {
