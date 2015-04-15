@@ -57,6 +57,31 @@ func (p *Parser) scanIgnoreWhitespace() (t Token, lit string) {
 	return
 }
 
+func (p *Parser) numberOrVector() Value {
+	_, lit := p.scanIgnoreWhitespace()
+
+	var vector Vector
+	vector = append(vector, ValueParse(lit))
+
+	for {
+		// Read a field.
+		tok, lit := p.scanIgnoreWhitespace()
+		if tok != Number {
+			p.unscan()
+			break
+		}
+
+		v := ValueParse(lit)
+		vector = append(vector, Expression(v))
+	}
+
+	// todo(santiaago) do we need this?
+	if len(vector) == 1 {
+		return vector[0]
+	}
+	return vector
+}
+
 // Expression is the interface for an expression.
 type Expression interface {
 	String() string
@@ -117,6 +142,24 @@ func (i Int) Evaluate() Value {
 func tryIntString(s string) (Value, error) {
 	i, err := strconv.ParseInt(s, 10, 64)
 	return Int(i), err
+}
+
+// Vector is a type to handle vectors
+type Vector []Value
+
+// String returns the string representation of a vector
+func (v Vector) String() string {
+	ret := ""
+	for i := range v {
+		ret += fmt.Sprintf("%v ", v[i])
+	}
+	ret += fmt.Sprintf("\n")
+	return ret
+}
+
+// Evaluate returns the value of a given vector.
+func (v Vector) Evaluate() Value {
+	return v
 }
 
 // Variable represents a variable.
@@ -191,6 +234,8 @@ func ValueParse(s string) Value {
 // Parse parse a assign statement a = b
 func (p *Parser) Parse() (*Expression, error) {
 
+	var numberOfVector Value
+
 	// First token can be an identifier or number (for now)
 	var left, right, operator string
 	tok, lit := p.scanIgnoreWhitespace()
@@ -198,7 +243,8 @@ func (p *Parser) Parse() (*Expression, error) {
 	if tok == Identifier {
 		left = lit
 	} else if tok == Number {
-		left = lit
+		p.unscan()
+		numberOfVector = p.numberOrVector()
 	} else {
 		return nil, fmt.Errorf("found %q, expected left", lit)
 	}
@@ -207,7 +253,7 @@ func (p *Parser) Parse() (*Expression, error) {
 	tok, lit = p.scanIgnoreWhitespace()
 	if tok == EOF {
 		if lastTok == Number {
-			e := Expression(Num{left})
+			e := Expression(numberOfVector)
 			return &e, nil
 		} else if lastTok == Identifier {
 			expr := Expression(Variable{name: left})
@@ -234,6 +280,8 @@ func (p *Parser) Parse() (*Expression, error) {
 	if isAssign {
 		tok, lit = p.scanIgnoreWhitespace()
 		if tok == Number {
+			// todo(santiaago):
+			// we should print an error here if left is a number and not a variable
 			stack[left] = ValueParse(lit)
 			expr := Expression(Variable{name: left})
 			return &expr, nil
@@ -253,10 +301,11 @@ func (p *Parser) Parse() (*Expression, error) {
 
 	// Next: Take care of operator case.
 	// We should loop over all our operators.
+	// todo(santiaago): need to handle vector operations ..
 	var terms []string
 	var operators []string
 
-	// Initialize arrays with the first term and operator seen.
+	// Initialize arrays with first term and first operator.
 	terms = append(terms, left)
 	operators = append(operators, operator)
 
