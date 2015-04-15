@@ -59,7 +59,6 @@ func (p *Parser) scanIgnoreWhitespace() (t Token, lit string) {
 
 func (p *Parser) numberOrVector() Value {
 	_, lit := p.scanIgnoreWhitespace()
-
 	var vector Vector
 	vector = append(vector, ValueParse(lit))
 
@@ -70,9 +69,8 @@ func (p *Parser) numberOrVector() Value {
 			p.unscan()
 			break
 		}
-
 		v := ValueParse(lit)
-		vector = append(vector, Expression(v))
+		vector = append(vector, v)
 	}
 
 	// todo(santiaago) do we need this?
@@ -225,7 +223,7 @@ func times(a, b Value) Value {
 func ValueParse(s string) Value {
 	v, err := tryIntString(s)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("failed to parse %v got error: %v\n", s, err)
 		return nil
 	}
 	return v
@@ -262,7 +260,7 @@ func (p *Parser) Parse() (*Expression, error) {
 			}
 			return &expr, nil
 		} else {
-			fmt.Println("jump", lastTok)
+			fmt.Println("Not a number or identifier ", lastTok)
 		}
 	}
 
@@ -302,11 +300,11 @@ func (p *Parser) Parse() (*Expression, error) {
 	// Next: Take care of operator case.
 	// We should loop over all our operators.
 	// todo(santiaago): need to handle vector operations ..
-	var terms []string
+	var terms []Value
 	var operators []string
 
 	// Initialize arrays with first term and first operator.
-	terms = append(terms, left)
+	terms = append(terms, numberOfVector)
 	operators = append(operators, operator)
 
 	for {
@@ -315,7 +313,9 @@ func (p *Parser) Parse() (*Expression, error) {
 		if tok != Identifier && tok != Number {
 			return nil, fmt.Errorf("found %q, expected number or identifier", lit)
 		}
-		terms = append(terms, lit)
+		p.unscan()
+		term := p.numberOrVector()
+		terms = append(terms, term)
 		// Read operator
 		tok, lit = p.scanIgnoreWhitespace()
 		// If the next token is not an operator then break the loop
@@ -334,20 +334,26 @@ func (p *Parser) Parse() (*Expression, error) {
 // At this point we have the following
 // left, operator, terms, operators
 // we need now to process all of this.
-func buildOperatorExpression(terms, operators []string) (*Expression, error) {
+func buildOperatorExpression(terms []Value, operators []string) (*Expression, error) {
 
 	if len(terms)-1 != len(operators) {
 		return nil, fmt.Errorf("ERROR terms and operators size mismatch")
 	}
 
 	var cumulExpr Expression
-
 	first := terms[0]
-	if _, ok := stack[first]; ok {
-		cumulExpr = Expression(Variable{name: first})
-	} else {
-		cumulExpr = Expression(ValueParse(first))
-	}
+	// todo(santiaago):
+	// you should be able to do:
+	//     a = 1
+	//     1 2 a
+	// 1 2 1
+	// This means that a vector can also contain identifiers.
+	// we will ignore that case for now, we will only work with vector of numbers.
+	// if _, ok := stack[first]; ok {
+	// 	cumulExpr = Expression(Variable{name: first})
+	// } else {
+	cumulExpr = first
+	//}
 
 	for i := 0; i < len(operators); i++ {
 
@@ -355,12 +361,13 @@ func buildOperatorExpression(terms, operators []string) (*Expression, error) {
 		op := operators[i]
 
 		var r Value
-		if val, ok := stack[right]; ok {
-			r = val
-		} else {
-			r = ValueParse(right)
-		}
-		cumulExpr = Expression(Binary{Left: cumulExpr.Evaluate(), Right: r, Operator: op})
+		// if val, ok := stack[right]; ok {
+		// 	r = val
+		// } else {
+		r = right.(Int)
+		//}
+		b := Binary{Left: cumulExpr.Evaluate(), Right: r, Operator: op}
+		cumulExpr = Expression(b)
 	}
 	return &cumulExpr, nil
 }
