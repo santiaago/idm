@@ -64,6 +64,8 @@ func TestParser_Values(t *testing.T) {
 		expr Expression
 		err  string
 	}{
+		{s: `1`, expr: Int(1)},
+		{s: `-1`, expr: Int(-1)},
 		{s: `a = 1`, expr: Int(1)},
 		{s: `1 + 2`, expr: Int(3)},
 		{s: `1 - 2`, expr: Int(-1)},
