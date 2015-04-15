@@ -239,7 +239,16 @@ func (p *Parser) Parse() (*Expression, error) {
 			return &expr, nil
 		}
 		right = lit
-		return buildExpression(isAssign, left, right, operator)
+		var expr Expression
+		var r Value
+		if val, ok := stack[right]; ok {
+			r = val
+		} else {
+			r = ValueParse(right)
+		}
+		stack[left] = r
+		expr = Expression(Variable{name: left})
+		return &expr, nil
 	}
 
 	// Next: Take care of operator case.
@@ -271,29 +280,6 @@ func (p *Parser) Parse() (*Expression, error) {
 	// At this point we have terms and, operators.
 	// We need now to process all of this.
 	return buildOperatorExpression(terms, operators)
-}
-
-func buildExpression(isAssign bool, left, right, operator string) (*Expression, error) {
-	var expr Expression
-	if isAssign {
-		l := ValueParse(left)
-		r := ValueParse(right)
-		expr = Expression(Statement{Left: l, Right: r})
-	} else {
-		var l, r Value
-		if val, ok := stack[left]; ok {
-			l = val
-		} else {
-			l = ValueParse(left)
-		}
-		if val, ok := stack[right]; ok {
-			r = val
-		} else {
-			r = ValueParse(right)
-		}
-		expr = Expression(Binary{Left: l, Right: r, Operator: operator})
-	}
-	return &expr, nil
 }
 
 // At this point we have the following
