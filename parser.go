@@ -205,17 +205,48 @@ func (b Binary) Evaluate() Value {
 
 func add(a, b Value) Value {
 	// todo(santiaago): will have to check types at some point
-	return Int(a.(Int) + b.(Int))
+	if _, ok := a.(Int); ok {
+		return Int(a.(Int) + b.(Int))
+	}
+	if _, ok := a.(Vector); ok {
+		var v Vector
+		for i := 0; i < len(a.(Vector)); i++ {
+			v = append(v, add(a.(Vector)[i], b.(Vector)[i]))
+		}
+		return v
+	}
+	fmt.Println("ERROR add: case not supported")
+	return nil
 }
 
 func minus(a, b Value) Value {
 	// todo(santiaago): will have to check types at some point
-	return Int(a.(Int) - b.(Int))
+	if _, ok := a.(Int); ok {
+		return Int(a.(Int) - b.(Int))
+	}
+	if _, ok := a.(Vector); ok {
+		var v Vector
+		for i := 0; i < len(a.(Vector)); i++ {
+			v = append(v, minus(a.(Vector)[i], b.(Vector)[i]))
+		}
+		return v
+	}
+	return nil
 }
 
 func times(a, b Value) Value {
 	// todo(santiaago): will have to check types at some point
-	return Int(a.(Int) * b.(Int))
+	if _, ok := a.(Int); ok {
+		return Int(a.(Int) * b.(Int))
+	}
+	if _, ok := a.(Vector); ok {
+		var v Vector
+		for i := 0; i < len(a.(Vector)); i++ {
+			v = append(v, times(a.(Vector)[i], b.(Vector)[i]))
+		}
+		return v
+	}
+	return nil
 }
 
 // ValueParse parse the string in the proper value
@@ -364,7 +395,7 @@ func buildOperatorExpression(terms []Value, operators []string) (*Expression, er
 		// if val, ok := stack[right]; ok {
 		// 	r = val
 		// } else {
-		r = right.(Int)
+		r = right
 		//}
 		b := Binary{Left: cumulExpr.Evaluate(), Right: r, Operator: op}
 		cumulExpr = Expression(b)
