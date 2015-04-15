@@ -29,8 +29,21 @@ I want to build a toy implementation on an APL-like interpreter. I got this idea
     12
 
 **todo:**
-
     ./idm
+      7 ** 3
+    343
+      1 2 3 4
+    1 2 3 4
+      a = 1 2 3 4
+    1 2 3 4
+      7 max 3
+    3
+      1 2 3 4 max 3 4 1 5
+    3 4 3 5
+      7 min 3
+    3
+      1 2 3 4 min 3 4 1 5
+    1 2 1 4
     ...
     ...
 
