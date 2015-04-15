@@ -57,6 +57,7 @@ func (p *Parser) scanIgnoreWhitespace() (t Token, lit string) {
 	return
 }
 
+// numberOrVector returns a number or a vector.
 func (p *Parser) numberOrVector() Value {
 	_, lit := p.scanIgnoreWhitespace()
 	var vector Vector
@@ -203,6 +204,7 @@ func (b Binary) Evaluate() Value {
 	return nil
 }
 
+// times performs a 'a' + 'b' operation and returns it.
 func add(a, b Value) Value {
 	// todo(santiaago): will have to check types at some point
 	if _, ok := a.(Int); ok {
@@ -219,8 +221,8 @@ func add(a, b Value) Value {
 	return nil
 }
 
+// times performs a 'a' - 'b' operation and returns it.
 func minus(a, b Value) Value {
-	// todo(santiaago): will have to check types at some point
 	if _, ok := a.(Int); ok {
 		return Int(a.(Int) - b.(Int))
 	}
@@ -234,8 +236,8 @@ func minus(a, b Value) Value {
 	return nil
 }
 
+// times performs a 'a' * 'b' operation and returns it.
 func times(a, b Value) Value {
-	// todo(santiaago): will have to check types at some point
 	if _, ok := a.(Int); ok {
 		return Int(a.(Int) * b.(Int))
 	}
@@ -328,9 +330,8 @@ func (p *Parser) Parse() (*Expression, error) {
 		return &expr, nil
 	}
 
-	// Next: Take care of operator case.
+	// Next: Take care of the operator case.
 	// We should loop over all our operators.
-	// todo(santiaago): need to handle vector operations ..
 	var terms []Value
 	var operators []string
 
@@ -358,7 +359,7 @@ func (p *Parser) Parse() (*Expression, error) {
 	}
 
 	// At this point we have terms and, operators.
-	// We need now to process all of this.
+	// We now need to process all of this.
 	return buildOperatorExpression(terms, operators)
 }
 
@@ -376,10 +377,11 @@ func buildOperatorExpression(terms []Value, operators []string) (*Expression, er
 	// todo(santiaago):
 	// you should be able to do:
 	//     a = 1
+	// 1
 	//     1 2 a
 	// 1 2 1
 	// This means that a vector can also contain identifiers.
-	// we will ignore that case for now, we will only work with vector of numbers.
+	// we will ignore this case for now, we will only work with vector of numbers.
 	// if _, ok := stack[first]; ok {
 	// 	cumulExpr = Expression(Variable{name: first})
 	// } else {

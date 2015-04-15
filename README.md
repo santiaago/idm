@@ -27,22 +27,25 @@ I want to build a toy implementation on an APL-like interpreter. I got this idea
     -4
         a + b + 10
     12
+        1 2 3 4
+    1 2 3 4
+
 
 **todo:**
     ./idm
-      7 ** 3
+	-1
+    -1
+      	7 ** 3
     343
-      1 2 3 4
+	a = 1 2 3 4
     1 2 3 4
-      a = 1 2 3 4
-    1 2 3 4
-      7 max 3
+      	7 max 3
     3
-      1 2 3 4 max 3 4 1 5
+	1 2 3 4 max 3 4 1 5
     3 4 3 5
-      7 min 3
+      	7 min 3
     3
-      1 2 3 4 min 3 4 1 5
+	1 2 3 4 min 3 4 1 5
     1 2 1 4
     ...
     ...

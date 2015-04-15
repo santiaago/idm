@@ -1,4 +1,4 @@
-// package idm as It Doesn't Matter) is a toy implementation of an APL interpreter.
+// package idm as It Doesn't Matter is a toy implementation of an APL interpreter.
 package main // package github.com/santiaago/idm
 
 import (
