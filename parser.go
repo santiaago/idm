@@ -19,15 +19,18 @@ func init() {
 type Parser struct {
 	s   *Scanner
 	buf struct {
-		t   Token  // last read token
-		lit string // last read literal
-		n   int    // buffer size (max=1)
+		t    []Token  // stack of last read tokens
+		lit  []string // stack of last read literals
+		n    int      // buffer size (max=1)
+		size int      // stack size for 't' and 'lit'
 	}
 }
 
 // NewParser returns a new instance of Parser.
 func NewParser(r io.Reader) *Parser {
-	return &Parser{s: NewScanner(r)}
+	p := Parser{s: NewScanner(r)}
+	p.buf.size = 10
+	return &p
 }
 
 // scan returns the next token from the underlying scanner.
@@ -35,18 +38,34 @@ func NewParser(r io.Reader) *Parser {
 func (p *Parser) scan() (t Token, lit string) {
 
 	if p.buf.n != 0 {
-		p.buf.n = 0
-		return p.buf.t, p.buf.lit
+		t, p.buf.t = p.buf.t[len(p.buf.t)-1], p.buf.t[:len(p.buf.t)-1]
+		lit, p.buf.lit = p.buf.lit[len(p.buf.lit)-1], p.buf.lit[:len(p.buf.lit)-1]
+		p.buf.n--
+		return
 	}
 
 	t, lit = p.s.Scan()
-
-	p.buf.t, p.buf.lit = t, lit
+	if len(p.buf.t) < p.buf.size {
+		p.buf.t = append(p.buf.t, t)
+		p.buf.lit = append(p.buf.lit, lit)
+	} else {
+		// stack limit reached so shift values and insert new ones
+		p.buf.t = p.buf.t[1:]
+		p.buf.t = append(p.buf.t, t)
+		p.buf.lit = p.buf.lit[1:]
+		p.buf.lit = append(p.buf.lit, lit)
+	}
 	return
 }
 
 // unscan pushes the previously read token back onto the buffer.
-func (p *Parser) unscan() { p.buf.n = 1 }
+func (p *Parser) unscan() {
+	if p.buf.n == p.buf.size {
+		fmt.Println("ERROR cannot unscan anymore, stack size limit reached.")
+		return
+	}
+	p.buf.n++
+}
 
 // scanIgnoreWhitespace scans the next non-whitespace token.
 func (p *Parser) scanIgnoreWhitespace() (t Token, lit string) {
@@ -74,7 +93,7 @@ func (p *Parser) numberOrVector() Value {
 			return nil
 		}
 	} else {
-		fmt.Println("ERROR function does not support token %v yet.", tok)
+		fmt.Printf("ERROR function does not support token %v yet.\n", tok)
 	}
 
 	for {
@@ -87,9 +106,9 @@ func (p *Parser) numberOrVector() Value {
 			if tok == Number {
 				lit = "-" + lit
 			} else {
-				// todo(santiaago) is this necessary?
-				fmt.Printf("ERROR function does not support token %v.\n", tok)
-				return nil
+				p.unscan()
+				p.unscan()
+				break
 			}
 		} else if tok != Number {
 			p.unscan()

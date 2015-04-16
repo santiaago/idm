@@ -9,11 +9,15 @@ I want to build a toy implementation on an APL-like interpreter. I got this idea
     ./idm
         1
     1
-	-1
+	      -1
     -1
+        - 1
+    SYNTAX ERROR
         1 + 1
     2
-	-1 + 1
+	      -1 + 1
+    0
+        1 - 1
     0
         a = 2
     2
@@ -21,9 +25,9 @@ I want to build a toy implementation on an APL-like interpreter. I got this idea
     2
         a + 1
     3
-	1 + a
+	      1 + a
     3
-	a + a + a + a
+	      a + a + a + a
     8
         b = 1
     1
@@ -31,8 +35,6 @@ I want to build a toy implementation on an APL-like interpreter. I got this idea
     3
         a = b
     1
-        1 + 2 + 3 - 10
-    -4
         a + b + 10
     12
         1 2 3 4
@@ -47,29 +49,27 @@ I want to build a toy implementation on an APL-like interpreter. I got this idea
 **todo:**
 
     ./idm
-	- 1
-    SYNTAX ERROR
-	1 - 1
+        1 + 2 + 3 - 10
+    -4
+    	  1 + -1
     0
-    	1 + -1
-    0
-	1 -1
+	      1 -1
     1 -1
-	-1 -1 -1 + 1 1 1
+	      -1 -1 -1 + 1 1 1
     0 0 0
-	1 + -1
+	      1 + -1
     0
       	7 ** 3
     343
-	a = 1 2 3 4
+	      a = 1 2 3 4
     1 2 3 4
       	7 max 3
     3
-	1 2 3 4 max 3 4 1 5
+	      1 2 3 4 max 3 4 1 5
     3 4 3 5
       	7 min 3
     3
-	1 2 3 4 min 3 4 1 5
+	      1 2 3 4 min 3 4 1 5
     1 2 1 4
     ...
     ...
