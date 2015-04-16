@@ -244,6 +244,10 @@ func (u Unary) Evaluate() Value {
 		return sum(u.Val)
 	} else if u.Operator == "+\\" {
 		return scanSum(u.Val)
+	} else if u.Operator == "*/" {
+		return multiply(u.Val)
+	} else if u.Operator == "*\\" {
+		return scanMultiply(u.Val)
 	}
 	return nil
 }
@@ -407,6 +411,43 @@ func scanSum(a Value) Value {
 		var v Vector
 		for i := 1; i <= len(a.(Vector)); i++ {
 			v = append(v, sum(a.(Vector)[:i]))
+		}
+		return v
+	}
+	return nil
+}
+
+// multiply performs the multiplication of all items of 'a'. <*/>
+// if 'a' is a vector, it is the multiplication of the vector items.
+func multiply(a Value) Value {
+	if _, ok := a.(Int); ok {
+		return a.(Int)
+	}
+	if _, ok := a.(Vector); ok {
+		var v Value = Int(1)
+		for i := 0; i < len(a.(Vector)); i++ {
+			v = times(v, a.(Vector)[i])
+		}
+		return v
+	}
+	fmt.Println("ERROR multiply: case not supported")
+	return nil
+}
+
+// scanMultiply performs the scan multiplication of the all the items of 'a'. <*\>
+// if 'a' is a vector, the result of scanSum is a vector with the
+// cumulative sum of the previous items.
+// example *\ 1 2 3
+// 1 2 6
+func scanMultiply(a Value) Value {
+	if _, ok := a.(Int); ok {
+		return a.(Int)
+	}
+
+	if _, ok := a.(Vector); ok {
+		var v Vector
+		for i := 1; i <= len(a.(Vector)); i++ {
+			v = append(v, multiply(a.(Vector)[:i]))
 		}
 		return v
 	}

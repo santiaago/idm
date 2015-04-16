@@ -25,6 +25,8 @@ func TestScanner_Scan(t *testing.T) {
 		{s: `min`, tok: Operator, lit: `min`},
 		{s: `+\`, tok: Operator, lit: `+\`},
 		{s: `+/`, tok: Operator, lit: `+/`},
+		{s: `*/`, tok: Operator, lit: `*/`},
+		{s: `*\`, tok: Operator, lit: `*\`},
 		{s: `=`, tok: Assign, lit: `=`},
 		{s: `a`, tok: Identifier, lit: `a`},
 		{s: `a42`, tok: Identifier, lit: `a42`},

@@ -120,6 +120,14 @@ func TestParser_Values(t *testing.T) {
 			s:    `+/ 1 2 3 4`,
 			expr: Int(10),
 		},
+		{
+			s:    `*\ 1 2 3 4`,
+			expr: Vector([]Value{Int(1), Int(2), Int(6), Int(24)}),
+		},
+		{
+			s:    `*/ 1 2 3 4`,
+			expr: Int(24),
+		},
 	}
 
 	for i, tt := range tests {

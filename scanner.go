@@ -70,10 +70,14 @@ func (s *Scanner) Scan() (t Token, lit string) {
 	case '/':
 		return Operator, string(r)
 	case '*':
-		// check power case
 		r1 := s.read()
+
 		if r1 == '*' {
 			return Operator, "**"
+		} else if r1 == '\\' {
+			return Operator, "*\\"
+		} else if r1 == '/' {
+			return Operator, "*/"
 		}
 		s.unread()
 		return Operator, string(r)
@@ -180,5 +184,5 @@ func isKeyword(s string) bool {
 }
 
 func isUnary(s string) bool {
-	return (s == "+\\") || (s == "+/")
+	return (s == "+\\") || (s == "+/") || (s == "*\\") || (s == "*/")
 }
