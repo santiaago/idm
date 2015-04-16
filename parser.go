@@ -89,11 +89,10 @@ func (p *Parser) numberOrVector() Value {
 		if tok == Number {
 			vector = append(vector, ValueParse("-"+lit))
 		} else {
-			fmt.Printf("ERROR function does not support token %v.\n", tok)
 			return nil
 		}
 	} else {
-		fmt.Printf("ERROR function does not support token %v yet.\n", tok)
+		return nil
 	}
 
 	for {
@@ -106,6 +105,7 @@ func (p *Parser) numberOrVector() Value {
 			if tok == Number {
 				lit = "-" + lit
 			} else {
+				// unscan twice to roll back both scan
 				p.unscan()
 				p.unscan()
 				break
@@ -402,11 +402,11 @@ func (p *Parser) Parse() (*Expression, error) {
 	for {
 		// Read a field.
 		tok, lit = p.scanIgnoreWhitespace()
-		if tok != Identifier && tok != Number {
-			return nil, fmt.Errorf("found %q, expected number or identifier", lit)
+		if tok != Identifier && tok != Number && tok != Operator {
+			return nil, fmt.Errorf("found %q, expected number or identifier or sign", lit)
 		}
-		// todo(santiaago): should check here cases (number, identifier)
-		if tok == Number {
+		// todo(santiaago): should check here cases (number, identifier, sign)
+		if tok == Number || tok == Operator {
 			p.unscan()
 			term := p.numberOrVector()
 			terms = append(terms, term)
