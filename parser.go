@@ -80,7 +80,18 @@ func (p *Parser) numberOrVector() Value {
 	for {
 		// Read a field.
 		tok, lit := p.scanIgnoreWhitespace()
-		if tok != Number {
+		if tok == Operator && lit == "-" {
+			// we use scan here because the '-' sign number must be
+			// right next to number, no space in between
+			tok, lit = p.scan()
+			if tok == Number {
+				lit = "-" + lit
+			} else {
+				// todo(santiaago) is this necessary?
+				fmt.Printf("ERROR function does not support token %v.\n", tok)
+				return nil
+			}
+		} else if tok != Number {
 			p.unscan()
 			break
 		}

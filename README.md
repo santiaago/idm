@@ -49,6 +49,8 @@ I want to build a toy implementation on an APL-like interpreter. I got this idea
     ./idm
 	- 1
     SYNTAX ERROR
+	1 - 1
+    0
     	1 + -1
     0
 	1 -1
