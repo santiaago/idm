@@ -77,11 +77,11 @@ I want to build a toy implementation on an APL-like interpreter. I got this idea
     6
         +\ 1 2 3
     1 3 6
-        \*/ 1 2 3
+        */ 1 2 3
     6
-        \*\ 1 2 3
+        *\ 1 2 3
     1 2 6
-    
+
 ##todo:
 
     ./idm
