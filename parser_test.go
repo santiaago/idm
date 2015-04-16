@@ -104,6 +104,22 @@ func TestParser_Values(t *testing.T) {
 			s:    `1 2 3 4 ** 2 2 2 2`,
 			expr: Vector([]Value{Int(1), Int(4), Int(9), Int(16)}),
 		},
+		{
+			s:    `1 2 3 4 min 2 2 2 2`,
+			expr: Vector([]Value{Int(1), Int(2), Int(2), Int(2)}),
+		},
+		{
+			s:    `1 2 3 4 max 2 2 2 2`,
+			expr: Vector([]Value{Int(2), Int(2), Int(3), Int(4)}),
+		},
+		{
+			s:    `+\ 1 2 3 4`,
+			expr: Vector([]Value{Int(1), Int(3), Int(6), Int(10)}),
+		},
+		{
+			s:    `+/ 1 2 3 4`,
+			expr: Int(10),
+		},
 	}
 
 	for i, tt := range tests {

@@ -37,7 +37,6 @@ func NewParser(r io.Reader) *Parser {
 // scan returns the next token from the underlying scanner.
 // if a token has been unscanned then read that instead.
 func (p *Parser) scan() (t Token, lit string) {
-
 	if p.buf.n != 0 {
 		t, p.buf.t = p.buf.t[len(p.buf.t)-1], p.buf.t[:len(p.buf.t)-1]
 		lit, p.buf.lit = p.buf.lit[len(p.buf.lit)-1], p.buf.lit[:len(p.buf.lit)-1]
@@ -224,6 +223,31 @@ func (v Variable) Evaluate() Value {
 	return nil
 }
 
+// Unary represents an unary statement
+// example +/ 1 2 3
+// example +\ 1 2 3
+// todo(santiaago): should add +2 -4 a unary objects
+type Unary struct {
+	Val      Value
+	Operator string
+}
+
+// String returns the string representation of a unary type
+func (u Unary) String() string {
+	return fmt.Sprintf("%v %v", u.Operator, u.Val)
+}
+
+// Evaluate returns the return of the operator computed with the value of the
+// unary type
+func (u Unary) Evaluate() Value {
+	if u.Operator == "+/" {
+		return sum(u.Val)
+	} else if u.Operator == "+\\" {
+		return scanSum(u.Val)
+	}
+	return nil
+}
+
 // Binary represents a binary statement
 // example: 12 + 3
 type Binary struct {
@@ -284,6 +308,7 @@ func minus(a, b Value) Value {
 		}
 		return v
 	}
+	fmt.Println("ERROR minus: case not supported")
 	return nil
 }
 
@@ -299,6 +324,7 @@ func times(a, b Value) Value {
 		}
 		return v
 	}
+	fmt.Println("ERROR times: case not supported")
 	return nil
 }
 
@@ -314,6 +340,7 @@ func pow(a, b Value) Value {
 		}
 		return v
 	}
+	fmt.Println("ERROR pow: case not supported")
 	return nil
 }
 
@@ -329,6 +356,7 @@ func max(a, b Value) Value {
 		}
 		return v
 	}
+	fmt.Println("ERROR max: case not supported")
 	return nil
 }
 
@@ -341,6 +369,44 @@ func min(a, b Value) Value {
 		var v Vector
 		for i := 0; i < len(a.(Vector)); i++ {
 			v = append(v, min(a.(Vector)[i], b.(Vector)[i]))
+		}
+		return v
+	}
+	fmt.Println("ERROR min: case not supported")
+	return nil
+}
+
+// sum performs the sum of all items of 'a'. <+/>
+// if 'a' is a vector, it is the sum of the vector items.
+func sum(a Value) Value {
+	if _, ok := a.(Int); ok {
+		return a.(Int)
+	}
+	if _, ok := a.(Vector); ok {
+		var v Value = Int(0)
+		for i := 0; i < len(a.(Vector)); i++ {
+			v = add(v, a.(Vector)[i])
+		}
+		return v
+	}
+	fmt.Println("ERROR sum: case not supported")
+	return nil
+}
+
+// scanSum performs the scan sum of the all the items of 'a'. <+\>
+// if 'a' is a vector, the result of scanSum is a vector with the
+// cumulative sum of the previous items.
+// example +\ 1 2 3
+// 1 3 6
+func scanSum(a Value) Value {
+	if _, ok := a.(Int); ok {
+		return a.(Int)
+	}
+
+	if _, ok := a.(Vector); ok {
+		var v Vector
+		for i := 1; i <= len(a.(Vector)); i++ {
+			v = append(v, sum(a.(Vector)[:i]))
 		}
 		return v
 	}
@@ -372,9 +438,15 @@ func (p *Parser) Parse() (*Expression, error) {
 		p.unscan()
 		left = p.numberOrVector()
 	} else if tok == Operator {
-		p.unscan()
-		left = p.numberOrVector()
-		lastTok = Number
+		if lit == "-" {
+			p.unscan()
+			left = p.numberOrVector()
+			lastTok = Number
+		} else if isUnary(lit) {
+			// remember operator
+			p.unscan()
+			operator = lit
+		}
 		// todo(santiaago): need to handle negative identifiers and vectors.
 	} else {
 		return nil, fmt.Errorf("ERROR found %q, expected left", lit)
@@ -400,10 +472,18 @@ func (p *Parser) Parse() (*Expression, error) {
 
 	isOperator := tok == Operator
 	isAssign := tok == Assign
-	if !isAssign && !isOperator {
+	isNumber := tok == Number
+	if !isAssign && !isOperator && !isNumber {
 		return nil, fmt.Errorf("ERROR found %q, expected '=' with tok: %v, expected %v", lit, tok, Assign)
 	}
 
+	// if the literal scanned was a number we unscan it to scan it completly.
+	// This is to scan all numbers in a vector and don't skip the first one.
+	if isNumber {
+		p.unscan()
+	}
+
+	// if last token read is an operator, remember it.
 	if isOperator {
 		operator = lit
 	}
@@ -448,7 +528,9 @@ func (p *Parser) Parse() (*Expression, error) {
 	var operators []string
 
 	// Initialize arrays with first term and first operator.
-	terms = append(terms, left)
+	if left != nil {
+		terms = append(terms, left)
+	}
 	operators = append(operators, operator)
 
 	for {
@@ -461,6 +543,7 @@ func (p *Parser) Parse() (*Expression, error) {
 		if tok == Number || tok == Operator {
 			p.unscan()
 			term := p.numberOrVector()
+
 			terms = append(terms, term)
 		} else if tok == Identifier {
 			if _, ok := stack[lit]; ok {
@@ -492,10 +575,6 @@ func (p *Parser) Parse() (*Expression, error) {
 // we need now to process all of this.
 func buildOperatorExpression(terms []Value, operators []string) (*Expression, error) {
 
-	if len(terms)-1 != len(operators) {
-		return nil, fmt.Errorf("ERROR terms and operators size mismatch")
-	}
-
 	var cumulExpr Expression
 	first := terms[0]
 	// todo(santiaago):
@@ -513,9 +592,19 @@ func buildOperatorExpression(terms []Value, operators []string) (*Expression, er
 	//}
 
 	for i := 0; i < len(operators); i++ {
-
-		right := terms[i+1]
 		op := operators[i]
+		// unary case
+		// todo(santiaago): how to handle +/ 1 2 3 + +/ 1 2 3 ?
+		if isUnary(op) {
+			u := Unary{Val: cumulExpr.Evaluate(), Operator: op}
+			cumulExpr = Expression(u)
+			continue
+		}
+		// todo(santiaago): need to clean this.
+		if len(terms)-1 != len(operators) {
+			return nil, fmt.Errorf("ERROR terms and operators size mismatch")
+		}
+		right := terms[i+1]
 
 		var r Value
 		// if val, ok := stack[right]; ok {

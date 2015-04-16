@@ -56,6 +56,14 @@ func (s *Scanner) Scan() (t Token, lit string) {
 	case eof:
 		return EOF, ""
 	case '+':
+		// check +\ and +/ cases
+		r1 := s.read()
+		if r1 == '\\' {
+			return Operator, "+\\"
+		} else if r1 == '/' {
+			return Operator, "+/"
+		}
+		s.unread()
 		return Operator, string(r)
 	case '-':
 		return Operator, string(r)
@@ -169,4 +177,8 @@ func isDigit(r rune) bool {
 
 func isKeyword(s string) bool {
 	return (s == "max") || (s == "min")
+}
+
+func isUnary(s string) bool {
+	return (s == "+\\") || (s == "+/")
 }

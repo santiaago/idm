@@ -73,6 +73,11 @@ I want to build a toy implementation on an APL-like interpreter. I got this idea
     3 4 3 5
 	      1 2 3 4 min 3 4 1 5
     1 2 1 4
+    1 2 3 4
+        +/ 1 2 3
+    6
+        +\ 1 2 3
+    1 3 6
 
 ##todo:
 
@@ -80,7 +85,6 @@ I want to build a toy implementation on an APL-like interpreter. I got this idea
         2 ** -1
     0.25
 	      a = 1 2 3 4
-    1 2 3 4
     ...
     ...
 

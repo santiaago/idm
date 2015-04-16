@@ -12,7 +12,7 @@ const (
 	Assign
 	// Number represents a simple number
 	Number
-	// Operator an operator such as '+' '-' '*' '**' 'max' 'min'
+	// Operator an operator such as '+' '-' '*' '**' 'max' 'min' '+\' '+/'
 	Operator
 	// Space represents space separation between tokens
 	Space
