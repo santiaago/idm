@@ -55,6 +55,8 @@ I want to build a toy implementation on an APL-like interpreter. I got this idea
     0 0 0
       	1 2 3 4 * 1 2 3 4
     1 4 9 16
+        1 2 3 4 ** 2 2 2 2
+    1 4 9 16
 
 **todo:**
 
