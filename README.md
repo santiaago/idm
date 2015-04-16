@@ -19,6 +19,10 @@ I want to build a toy implementation on an APL-like interpreter. I got this idea
     0
         1 - 1
     0
+        1 + 2 + 3 - 10
+    -4
+    	  1 + -1
+    0
         a = 2
     2
         a
@@ -43,22 +47,16 @@ I want to build a toy implementation on an APL-like interpreter. I got this idea
     2 4 6 8
       	1 2 3 4 - 1 2 3 4
     0 0 0 0
+	      1 -1
+    1 -1
+	      -1 -1 -1 + 1 1 1
+    0 0 0
       	1 2 3 4 * 1 2 3 4
     1 4 9 16
 
 **todo:**
 
     ./idm
-        1 + 2 + 3 - 10
-    -4
-    	  1 + -1
-    0
-	      1 -1
-    1 -1
-	      -1 -1 -1 + 1 1 1
-    0 0 0
-	      1 + -1
-    0
       	7 ** 3
     343
 	      a = 1 2 3 4
