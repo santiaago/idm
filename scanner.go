@@ -32,6 +32,7 @@ func (s *Scanner) unread() { _ = s.r.UnreadRune() }
 func (s *Scanner) Scan() (t Token, lit string) {
 	// read the next rune.
 	r := s.read()
+	sr := string(r)
 
 	// if we see whitespace then consume all contiguous whitespace.
 	// if we see a letter then consume as an identifier keyword word.
@@ -40,12 +41,17 @@ func (s *Scanner) Scan() (t Token, lit string) {
 		return s.scanWhitespace()
 	} else if isLetter(r) {
 		s.unread()
-		return s.scanIdentifier()
+		t, lit = s.scanIdentifier()
+		if !isKeyword(lit) {
+			return
+		}
+		sr = lit
 	} else if isDigit(r) {
 		s.unread()
 		return s.scanDigit()
 	}
 
+	// rune cases
 	switch r {
 	case eof:
 		return EOF, ""
@@ -65,6 +71,14 @@ func (s *Scanner) Scan() (t Token, lit string) {
 		return Operator, string(r)
 	case '=':
 		return Assign, string(r)
+	}
+
+	// keyword cases
+	switch sr {
+	case "max":
+		return Operator, sr
+	case "min":
+		return Operator, sr
 	}
 	return Error, string(r)
 }
@@ -151,4 +165,8 @@ func isLetter(r rune) bool {
 // whitespace are 0-9
 func isDigit(r rune) bool {
 	return (r >= '0' && r <= '9')
+}
+
+func isKeyword(s string) bool {
+	return (s == "max") || (s == "min")
 }

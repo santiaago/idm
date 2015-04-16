@@ -77,6 +77,8 @@ func TestParser_Values(t *testing.T) {
 		{s: `-1 - -2 + -10`, expr: Int(-9)},
 		{s: `1* 2`, expr: Int(2)},
 		{s: `2 ** 2`, expr: Int(4)},
+		{s: `2 max 1`, expr: Int(2)},
+		{s: `2 min 1`, expr: Int(1)},
 		{s: `a + 2`, expr: Int(3)},
 		{s: `2 + a`, expr: Int(3)},
 		{s: `a + a`, expr: Int(2)},

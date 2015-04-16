@@ -25,6 +25,10 @@ I want to build a toy implementation on an APL-like interpreter. I got this idea
     0
       	7 ** 3
     343
+      	7 max 3
+    3
+      	7 min 3
+    3
         a = 2
     2
         a
@@ -57,6 +61,10 @@ I want to build a toy implementation on an APL-like interpreter. I got this idea
     1 4 9 16
         1 2 3 4 ** 2 2 2 2
     1 4 9 16
+	      1 2 3 4 max 3 4 1 5
+    3 4 3 5
+	      1 2 3 4 min 3 4 1 5
+    1 2 1 4
 
 **todo:**
 
@@ -65,14 +73,6 @@ I want to build a toy implementation on an APL-like interpreter. I got this idea
     0.25
 	      a = 1 2 3 4
     1 2 3 4
-      	7 max 3
-    3
-	      1 2 3 4 max 3 4 1 5
-    3 4 3 5
-      	7 min 3
-    3
-	      1 2 3 4 min 3 4 1 5
-    1 2 1 4
     ...
     ...
 
