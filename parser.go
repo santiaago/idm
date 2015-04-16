@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"math"
 	"strconv"
 )
 
@@ -244,6 +245,8 @@ func (b Binary) Evaluate() Value {
 		return minus(b.Left, b.Right)
 	} else if b.Operator == "*" {
 		return times(b.Left, b.Right)
+	} else if b.Operator == "**" {
+		return pow(b.Left, b.Right)
 	}
 	return nil
 }
@@ -289,6 +292,21 @@ func times(a, b Value) Value {
 		var v Vector
 		for i := 0; i < len(a.(Vector)); i++ {
 			v = append(v, times(a.(Vector)[i], b.(Vector)[i]))
+		}
+		return v
+	}
+	return nil
+}
+
+// pow performs a 'a' ** 'b' operation and returns it.
+func pow(a, b Value) Value {
+	if _, ok := a.(Int); ok {
+		return Int(math.Pow(float64(a.(Int)), float64(b.(Int))))
+	}
+	if _, ok := a.(Vector); ok {
+		var v Vector
+		for i := 0; i < len(a.(Vector)); i++ {
+			v = append(v, pow(a.(Vector)[i], b.(Vector)[i]))
 		}
 		return v
 	}

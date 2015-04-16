@@ -23,6 +23,8 @@ I want to build a toy implementation on an APL-like interpreter. I got this idea
     -4
     	  1 + -1
     0
+      	7 ** 3
+    343
         a = 2
     2
         a
@@ -57,8 +59,8 @@ I want to build a toy implementation on an APL-like interpreter. I got this idea
 **todo:**
 
     ./idm
-      	7 ** 3
-    343
+        2 ** -1
+    0.25
 	      a = 1 2 3 4
     1 2 3 4
       	7 max 3

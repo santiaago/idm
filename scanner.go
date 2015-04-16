@@ -28,7 +28,7 @@ func (s *Scanner) read() rune {
 
 func (s *Scanner) unread() { _ = s.r.UnreadRune() }
 
-// Scan retusn the next token and literal value.
+// Scan returns the next token and literal value.
 func (s *Scanner) Scan() (t Token, lit string) {
 	// read the next rune.
 	r := s.read()
@@ -56,6 +56,12 @@ func (s *Scanner) Scan() (t Token, lit string) {
 	case '/':
 		return Operator, string(r)
 	case '*':
+		// check power case
+		r1 := s.read()
+		if r1 == '*' {
+			return Operator, "**"
+		}
+		s.unread()
 		return Operator, string(r)
 	case '=':
 		return Assign, string(r)
