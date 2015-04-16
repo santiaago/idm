@@ -64,11 +64,14 @@ func (p *Parser) numberOrVector() Value {
 	if tok == Number {
 		vector = append(vector, ValueParse(lit))
 	} else if tok == Operator && lit == "-" {
-		tok, lit = p.scanIgnoreWhitespace()
+		// we use scan here because the '-' sign number must be
+		// right next to number, no space in between
+		tok, lit = p.scan()
 		if tok == Number {
 			vector = append(vector, ValueParse("-"+lit))
 		} else {
-			fmt.Println("ERROR function does not support token %v yet.", tok)
+			fmt.Printf("ERROR function does not support token %v.\n", tok)
+			return nil
 		}
 	} else {
 		fmt.Println("ERROR function does not support token %v yet.", tok)
@@ -328,7 +331,8 @@ func (p *Parser) Parse() (*Expression, error) {
 		tok, lit = p.scanIgnoreWhitespace()
 		if tok == Number {
 			// todo(santiaago):
-			// we should print an error here if left is a number and not a variable
+			// we should print an error here if left is a number and
+			// not a variable as the asignment 1 = 2 doesn't make sense.
 			var expr Expression
 			if v, ok := left.(Variable); ok {
 				stack[v.name] = ValueParse(lit)
