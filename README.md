@@ -1,10 +1,12 @@
 # idm
 
-idm (it doesn't matter) is a toy implementation of an APL interpreter.
+idm (**i**t **d**oesn't **m**atter) is a toy implementation of an APL interpreter.
 
 I want to build a toy implementation on an APL-like interpreter. I got this idea after watching [this](https://www.youtube.com/watch?v=PXoG0WX0r_E) video from Rob Pike.
 
-**can do:**
+## can do:
+
+**numbers**
 
     ./idm
         1
@@ -29,6 +31,9 @@ I want to build a toy implementation on an APL-like interpreter. I got this idea
     3
       	7 min 3
     3
+
+**variables**
+
         a = 2
     2
         a
@@ -47,6 +52,9 @@ I want to build a toy implementation on an APL-like interpreter. I got this idea
     1
         a + b + 10
     12
+
+**vectors**
+
         1 2 3 4
     1 2 3 4
       	1 2 3 4 + 1 2 3 4
@@ -66,7 +74,7 @@ I want to build a toy implementation on an APL-like interpreter. I got this idea
 	      1 2 3 4 min 3 4 1 5
     1 2 1 4
 
-**todo:**
+##todo:
 
     ./idm
         2 ** -1
