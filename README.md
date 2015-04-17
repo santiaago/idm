@@ -87,8 +87,53 @@ I want to build a toy implementation on an APL-like interpreter. I got this idea
     ./idm
         2 ** -1
     0.25
-	      a = 1 2 3 4
+	a = 1 2 3 4
     1 2 3 4
+	1 1 0 1 and 1 0 1 1
+    1 0 0 1
+      	1 1 0 1 or 1 0 1 1
+    1 1 1 1
+      	iota 5
+    1 2 3 4 5
+      	y = 2 x iota 5
+    2 4 6 8 10
+      	or/ 1 0 1 1
+    1
+	and/ 1 0 0 0
+    0
+	max/ 1 2 4 2
+    4
+	min/ 1 2 4 3
+    0
+	y[2]
+    6
+	dim y
+    5
+	y[:2]
+    2 4
+	y[2:]
+    6 8 10
+      	y[-1]
+    10
+	y[-2:]
+    2 4 6
+      	3 shape 1
+    1 1 1
+      	m = 5 5 shape 1
+    1 1 1 1 1
+    1 1 1 1 1
+    1 1 1 1 1
+    1 1 1 1 1
+    1 1 1 1 1
+      	m + m
+    2 2 2 2 2
+    2 2 2 2 2
+    2 2 2 2 2
+    2 2 2 2 2
+    2 2 2 2 2
+      	dim m
+    5 5
+	functions...
     ...
     ...
 
