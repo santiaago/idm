@@ -89,6 +89,7 @@ func TestParser_Values(t *testing.T) {
 		{s: `a = b`, expr: Int(42)},
 		{s: `1 2 3 4`, expr: Vector([]Value{Int(1), Int(2), Int(3), Int(4)})},
 		{s: `-1 -2 -3 -4`, expr: Vector([]Value{Int(-1), Int(-2), Int(-3), Int(-4)})},
+		{s: `-1 -2 3 4`, expr: Vector([]Value{Int(-1), Int(-2), Int(3), Int(4)})},
 		{
 			s:    `1 2 3 4 + 1 2 3 4`,
 			expr: Vector([]Value{Int(2), Int(4), Int(6), Int(8)}),
