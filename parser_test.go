@@ -114,6 +114,10 @@ func TestParser_Values(t *testing.T) {
 			s:    `1 2 3 4 max 2 2 2 2`,
 			expr: Vector([]Value{Int(2), Int(2), Int(3), Int(4)}),
 		},
+		{s: `+\ 1`, expr: Int(1)},
+		{s: `+/ 1`, expr: Int(1)},
+		{s: `*\ 1`, expr: Int(1)},
+		{s: `*/ 1`, expr: Int(1)},
 		{
 			s:    `+\ 1 2 3 4`,
 			expr: Vector([]Value{Int(1), Int(3), Int(6), Int(10)}),
