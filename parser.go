@@ -450,7 +450,9 @@ func (p *Parser) Parse() (*Expression, error) {
 		if lit == "-" {
 			p.unscan()
 			left = p.numberOrVector()
-			lastTok = Number
+			if left != nil {
+				lastTok = Number
+			}
 		} else if isUnary(lit) {
 			// remember operator
 			p.unscan()
@@ -475,7 +477,7 @@ func (p *Parser) Parse() (*Expression, error) {
 			expr := Expression(left)
 			return &expr, nil
 		} else {
-			fmt.Println("ERROR not a number or identifier ", lastTok)
+			return nil, fmt.Errorf("ERROR not a number or identifier")
 		}
 	}
 
@@ -483,7 +485,7 @@ func (p *Parser) Parse() (*Expression, error) {
 	isAssign := tok == Assign
 	isNumber := tok == Number
 	if !isAssign && !isOperator && !isNumber {
-		return nil, fmt.Errorf("ERROR found %q, expected '=' with tok: %v, expected %v", lit, tok, Assign)
+		return nil, fmt.Errorf("ERROR found %q, expected assignment, operator or number. Got token %v", lit, tok)
 	}
 
 	// if the literal scanned was a number we unscan it to scan it completly.
@@ -509,9 +511,11 @@ func (p *Parser) Parse() (*Expression, error) {
 				stack[v.name] = ValueParse(lit)
 				expr = Expression(v)
 			} else {
-				fmt.Println("ERROR left hand side should be a variable.")
+				return nil, fmt.Errorf("ERROR left hand side should be a variable")
 			}
 			return &expr, nil
+		} else if lastTok == Number {
+			return nil, fmt.Errorf("ERROR left hand side should be a variable")
 		}
 		// identifier case
 		// todo(santiaago): should add an token check here.
