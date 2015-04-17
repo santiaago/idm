@@ -70,6 +70,7 @@ func TestParser_Values(t *testing.T) {
 		{s: `- 1`, err: `ERROR`},
 		{s: `? 1`, err: `ERROR`},
 		{s: `a = 1`, expr: Int(1)},
+		{s: `a`, expr: Int(1)},
 		{s: `1 + 2`, expr: Int(3)},
 		{s: `1 - 2`, expr: Int(-1)},
 		{s: `-1 + 2`, expr: Int(1)},
