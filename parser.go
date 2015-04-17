@@ -131,38 +131,6 @@ type Expression interface {
 	Evaluate() Value
 }
 
-// Statement represents a code statement a = 2.
-type Statement struct {
-	Left  Value
-	Right Value
-}
-
-// String retuns the statement as a string.
-func (s Statement) String() string {
-	return fmt.Sprintf("%v%v", s.Left, s.Right)
-}
-
-// Evaluate evaluates the given statement.
-func (s Statement) Evaluate() Value {
-	// todo(santiaago): need to think what this should really do..
-	return s.Left
-}
-
-// Num represents a number statement.
-type Num struct {
-	n string
-}
-
-// String returns the string of the number
-func (n Num) String() string {
-	return fmt.Sprintf("%v", n.n)
-}
-
-// Evaluate returns the number value
-func (n Num) Evaluate() Value {
-	return n
-}
-
 // Value is an interface to handle different types.
 type Value interface {
 	String() string
