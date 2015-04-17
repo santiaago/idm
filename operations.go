@@ -7,7 +7,6 @@ import (
 
 // times performs a 'a' + 'b' operation and returns it.
 func add(a, b Value) Value {
-	// todo(santiaago): will have to check types at some point
 	if _, ok := a.(Int); ok {
 		return Int(a.(Int) + b.(Int))
 	}

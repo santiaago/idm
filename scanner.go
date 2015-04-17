@@ -71,7 +71,7 @@ func (s *Scanner) Scan() (t Token, lit string) {
 		return Operator, string(r)
 	case '*':
 		r1 := s.read()
-
+		// todo(santiaago): is there a more intelligent way of doing this?
 		if r1 == '*' {
 			return Operator, "**"
 		} else if r1 == '\\' {

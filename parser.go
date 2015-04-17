@@ -36,6 +36,7 @@ func NewParser(r io.Reader) *Parser {
 // if a token has been unscanned then read that instead.
 func (p *Parser) scan() (t Token, lit string) {
 	if p.buf.n != 0 {
+		// todo(santiaago): refactor
 		t, p.buf.t = p.buf.t[len(p.buf.t)-1], p.buf.t[:len(p.buf.t)-1]
 		lit, p.buf.lit = p.buf.lit[len(p.buf.lit)-1], p.buf.lit[:len(p.buf.lit)-1]
 		p.buf.n--
@@ -48,6 +49,7 @@ func (p *Parser) scan() (t Token, lit string) {
 		p.buf.lit = append(p.buf.lit, lit)
 	} else {
 		// stack limit reached so shift values and insert new ones
+		// todo(santiaago): refactor
 		p.buf.t = p.buf.t[1:]
 		p.buf.t = append(p.buf.t, t)
 		p.buf.lit = p.buf.lit[1:]
@@ -81,6 +83,7 @@ func (p *Parser) numberOrVector() Value {
 	if tok == Number {
 		vector = append(vector, ValueParse(lit))
 	} else if tok == Operator && lit == "-" {
+		// todo(santiaago): handle this as a unary operator.
 		// we use scan here because the '-' sign number must be
 		// right next to number, no space in between
 		tok, lit = p.scan()
@@ -127,6 +130,7 @@ func (p *Parser) numberOrVector() Value {
 func (p *Parser) Parse() (*Expression, error) {
 
 	// First token can be an identifier or number(a number can start with a '-' sign)
+	// todo(santiaago): refactor first token.
 	var left Value
 	var right, operator string
 	tok, lit := p.scanIgnoreWhitespace()
@@ -154,6 +158,7 @@ func (p *Parser) Parse() (*Expression, error) {
 	}
 
 	// Next it could be EOF, an operator or an assignment (for now)
+	// todo(santiaago): refactor EOF case.
 	tok, lit = p.scanIgnoreWhitespace()
 	if tok == EOF {
 		if lastTok == Number {
@@ -190,6 +195,7 @@ func (p *Parser) Parse() (*Expression, error) {
 	}
 
 	// Next: Take care of assign case.
+	// todo(santiaago): refactor assign case.
 	if isAssign {
 		tok, lit = p.scanIgnoreWhitespace()
 		if tok == Number {
@@ -225,6 +231,7 @@ func (p *Parser) Parse() (*Expression, error) {
 	}
 
 	// Next: Take care of the operator case.
+	// todo(santiaago): refactor this.
 	// We should loop over all our operators.
 	var terms []Value
 	var operators []string
