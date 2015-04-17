@@ -516,23 +516,22 @@ func (p *Parser) Parse() (*Expression, error) {
 			return &expr, nil
 		} else if lastTok == Number {
 			return nil, fmt.Errorf("ERROR left hand side should be a variable")
+		} else if tok == Identifier {
+			right = lit
+			var expr Expression
+			var r Value
+			if val, ok := stack[right]; ok {
+				r = val
+			} else {
+				return nil, fmt.Errorf("ERROR variable undefined")
+			}
+			if v, ok := left.(Variable); ok {
+				stack[v.name] = r
+				expr = Expression(v)
+			}
+			return &expr, nil
 		}
-		// identifier case
-		// todo(santiaago): should add an token check here.
-		right = lit
-		var expr Expression
-		var r Value
-		if val, ok := stack[right]; ok {
-			r = val
-		} else {
-			r = ValueParse(right)
-		}
-
-		if v, ok := left.(Variable); ok {
-			stack[v.name] = r
-			expr = Expression(v)
-		}
-		return &expr, nil
+		return nil, fmt.Errorf("ERROR right hand side has unexpected token")
 	}
 
 	// Next: Take care of the operator case.
@@ -550,7 +549,7 @@ func (p *Parser) Parse() (*Expression, error) {
 		// Read a field.
 		tok, lit = p.scanIgnoreWhitespace()
 		if tok != Identifier && tok != Number && tok != Operator {
-			return nil, fmt.Errorf("found %q, expected number or identifier or sign", lit)
+			return nil, fmt.Errorf("ERROR found %q, expected number or identifier or sign", lit)
 		}
 		// todo(santiaago): should check here cases (number, identifier, sign)
 		if tok == Number || tok == Operator {
@@ -564,8 +563,6 @@ func (p *Parser) Parse() (*Expression, error) {
 			} else {
 				return nil, fmt.Errorf("ERROR variable %v not found", lit)
 			}
-		} else {
-			return nil, fmt.Errorf("ERROR unexpected token %v", tok)
 		}
 		// Read operator
 		tok, lit = p.scanIgnoreWhitespace()
@@ -625,11 +622,12 @@ func buildOperatorExpression(terms []Value, operators []string) (*Expression, er
 		// } else {
 		r = right
 		//}
-		if cumulExpr == nil {
-			fmt.Println("ERROR nil expression.")
+		if cumulExpr != nil {
+			b := Binary{Left: cumulExpr.Evaluate(), Right: r, Operator: op}
+			cumulExpr = Expression(b)
+		} else {
+			return nil, fmt.Errorf("ERROR nil expression")
 		}
-		b := Binary{Left: cumulExpr.Evaluate(), Right: r, Operator: op}
-		cumulExpr = Expression(b)
 	}
 	return &cumulExpr, nil
 }
