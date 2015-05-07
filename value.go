@@ -119,6 +119,8 @@ func (b Binary) Evaluate() Value {
 		return add(b.Left, b.Right)
 	} else if b.Operator == "-" {
 		return minus(b.Left, b.Right)
+	} else if b.Operator == "/" {
+		return divide(b.Left, b.Right)
 	} else if b.Operator == "*" {
 		return times(b.Left, b.Right)
 	} else if b.Operator == "**" {

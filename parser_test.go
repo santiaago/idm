@@ -14,6 +14,7 @@ func TestParser_Scan(t *testing.T) {
 	}{
 		{s: `a = 1`, expr: Variable{name: "a"}},
 		{s: `1 + 2`, expr: Binary{Left: Int(1), Right: Int(2), Operator: "+"}},
+		{s: `1 / 2`, expr: Binary{Left: Int(1), Right: Int(2), Operator: "/"}},
 		{s: `1 - 2`, expr: Binary{Left: Int(1), Right: Int(2), Operator: "-"}},
 		{s: `1* 2`, expr: Binary{Left: Int(1), Right: Int(2), Operator: "*"}},
 		{s: `2 ** 2`, expr: Binary{Left: Int(2), Right: Int(2), Operator: "**"}},
@@ -141,6 +142,7 @@ func TestParser_NumberArithmeticValues(t *testing.T) {
 		{s: `1 - 2`, expr: Int(-1)},
 		{s: `-1 + 2`, expr: Int(1)},
 		{s: `-1 + -2`, expr: Int(-3)},
+		{s: `1 / 2`, expr: Int(0)},
 		{s: `-1 - -2 + -10`, expr: Int(-9)},
 		{s: `1* 2`, expr: Int(2)},
 		{s: `2 ** 2`, expr: Int(4)},

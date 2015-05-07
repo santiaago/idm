@@ -37,6 +37,22 @@ func minus(a, b Value) Value {
 	return nil
 }
 
+// times performs a 'a' / 'b' operation and returns it.
+func divide(a, b Value) Value {
+	if _, ok := a.(Int); ok {
+		return Int(a.(Int) / b.(Int))
+	}
+	if _, ok := a.(Vector); ok {
+		var v Vector
+		for i := 0; i < len(a.(Vector)); i++ {
+			v = append(v, divide(a.(Vector)[i], b.(Vector)[i]))
+		}
+		return v
+	}
+	fmt.Println("ERROR divide: case not supported")
+	return nil
+}
+
 // times performs a 'a' * 'b' operation and returns it.
 func times(a, b Value) Value {
 	if _, ok := a.(Int); ok {
